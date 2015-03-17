@@ -200,7 +200,7 @@ public class Swagger19Migration {
 
 
         } catch (GovernanceException e) {
-            String msg = "Failed to get API fro artifact ";
+            String msg = "Failed to get API from artifact ";
             throw new APIManagementException(msg, e);
         }
         return api;
@@ -278,7 +278,7 @@ public class Swagger19Migration {
 		swagger20doc.put("info", info);
 		
 		//set the paths object
-		JSONObject pathObj = generatePathObj(apiDefsPaths);
+		JSONObject pathObj = generatePathsObj(apiDefsPaths);
 		swagger20doc.put("paths", pathObj);
 		
 		URL url = new URL(swagger12basepath);
@@ -500,6 +500,7 @@ public class Swagger19Migration {
                     }
 
                     //TODO fill it if necessary, ex type, items etc
+                    //TODO if 'in' is body then schema is differ
                     newParameters.add(paramObj);
 
                 }
@@ -517,12 +518,11 @@ public class Swagger19Migration {
                     swagger2OperationsObj.put("summary", operationObject.get("summary"));
                 }
 
+
                 //set pathItem object for the resource
                 //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathItemObject
                 pathItemObj.put(method.toLowerCase(), swagger2OperationsObj);
-                //TODO Check this param. A list of parameters that are applicable for all the
-                //operations described under this path. These parameters can be overridden at the
-                //operation level
+                //TODO Check this param. A list of parameters that are applicable for all the operations described under this path. These parameters can be overridden at the operation level
                 pathItemObj.put("parameters", new JSONArray());
 
                 //set the responseMessages. this is a required field. Set a default value if empty
