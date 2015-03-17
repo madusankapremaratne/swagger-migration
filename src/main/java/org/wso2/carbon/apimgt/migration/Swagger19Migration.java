@@ -381,87 +381,87 @@ public class Swagger19Migration {
 		    JSONArray operations = entry.getValue();
 		    JSONObject pathItemObj = new JSONObject();
 
-            for (Object operation : operations) {
-                JSONObject operationObject = (JSONObject) operation;
-                String method = (String) operationObject.get("method");
-                JSONArray swagger2ParamObjs = (JSONArray) operationObject.get("parameters");
-                JSONObject swagger2OperationsObj = new JSONObject();
+		    for (int i = 0; i < operations.size(); i++) {
+		    	 JSONObject operation = (JSONObject) operations.get(i);
+		    	 String method = (String) operation.get("method");
+		    	 JSONArray swagger2ParamObj = (JSONArray) operation.get("parameters");
+		    	 JSONObject swagger2OperationsObj = new JSONObject();
 
-                JSONArray newParameters = new JSONArray();
+		    	 JSONArray newParameters = new JSONArray();
 
-                for (Object swagger2ParamObj : swagger2ParamObjs) {
-                    JSONObject oldParam = (JSONObject) swagger2ParamObj;
-                    JSONObject paramObj = new JSONObject();
-                    paramObj.put("name", oldParam.get("name"));
-                    paramObj.put("in", oldParam.get("paramType"));
-                    paramObj.put("required", oldParam.get("required"));
-                    if (paramObj.containsKey("description")) {
-                        paramObj.put("description", oldParam.get("description"));
-                    } else {
-                        paramObj.put("description", "");
-                    }
+		    	 for(int j = 0; j < swagger2ParamObj.size(); j ++){
+		    		 JSONObject oldParam = (JSONObject) swagger2ParamObj.get(j);
+		    		 JSONObject paramObj = new JSONObject();
+		    		 paramObj.put("name",oldParam.get("name"));
+		    		 paramObj.put("in",oldParam.get("paramType"));
+		    		 paramObj.put("required", oldParam.get("required"));
+		    		 if(paramObj.containsKey("description")){
+		    			 paramObj.put("description",oldParam.get("description"));
+		    		 } else {
+		    			 paramObj.put("description","");
+		    		 }
 
-                    //TODO fill it if necessary, ex type, items etc
-                    newParameters.add(paramObj);
-                }
+		    		 //TODO fill it if necessary, ex type, items etc
+		    		 newParameters.add(paramObj);
+		    	 }
 
-                //generate the Operation object
-                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#operationObject
-                swagger2OperationsObj.put("operationId", (String) operationObject.get("nickname"));
-                //setting operation level params
-                swagger2OperationsObj.put("parameters", newParameters);
+		    	 //generate the Operation object
+		    	 //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#operationObject
+		    	 swagger2OperationsObj.put("operationId", (String) operation.get("nickname"));
+		    	 //setting operation level params
+		    	 swagger2OperationsObj.put("parameters", newParameters);
 
-                if (operationObject.containsKey("notes")) {
-                    swagger2OperationsObj.put("description", (String) operationObject.get("notes"));
-                }
-                if (operationObject.containsKey("summary")) {
-                    swagger2OperationsObj.put("summary", (String) operationObject.get("summary"));
-                }
+		    	 if(operation.containsKey("notes")){
+		    		 swagger2OperationsObj.put("description", (String) operation.get("notes"));
+		    	 }
+		    	 if(operation.containsKey("summary")){
+		    		 swagger2OperationsObj.put("summary", (String) operation.get("summary"));
+		    	 }
 
 
-                //set pathItem object for the resource
-                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathItemObject
-                pathItemObj.put(method.toLowerCase(), swagger2OperationsObj);
-                //TODO Check this param. A list of parameters that are applicable for all the
-                //operations described under this path. These parameters can be overridden at the
-                //operation level
-                pathItemObj.put("parameters", new JSONArray());
+		    	 //set pathItem object for the resource
+		    	 //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathItemObject
+		    	 pathItemObj.put(method.toLowerCase(), swagger2OperationsObj);
+		    	 //TODO Check this param. A list of parameters that are applicable for all the
+		    	 //operations described under this path. These parameters can be overridden at the
+		    	 //operation level
+		    	 pathItemObj.put("parameters", new JSONArray());
 
-                //set the responseMessages. this is a required field. Set a default value if empty
-                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#responsesObject
-                JSONObject responses = null;
-                if (operationObject.containsKey("responseMessages")) {
-                    responses = new JSONObject();
-                    JSONArray responseMessages = (JSONArray) operationObject.get("responseMessages");
-                    for (int x = 0; x < responseMessages.size(); x++) {
-                        JSONObject errorObj = (JSONObject) responseMessages.get(x);
-                        responses.put(errorObj.get("code"), errorObj.get("message"));
-                    }
-                }
-                if (responses == null) {
-                    //set a default respose message
-                    //TODO add response codes and update the message
-                    responses = (JSONObject) parser.parse(Constants.DEFAULT_RESPONSE);
-                }
-                //pathItemObj.put("responses", responses);
-                swagger2OperationsObj.put("responses", responses);
+		    	 //set the responseMessages. this is a required field. Set a default value if empty
+		    	 //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#responsesObject
+		    	 JSONObject responses = null;
+		    	 if(operation.containsKey("responseMessages")){
+		    		 responses = new JSONObject();
+		    		 JSONArray responseMessages = (JSONArray) operation.get("responseMessages");
+		    		 for(int x = 0; x < responseMessages.size(); x++){
+		    			 JSONObject errorObj = (JSONObject) responseMessages.get(x);
+		    			 responses.put(errorObj.get("code"), errorObj.get("message"));
+		    		 }
+		    	 }
+		    	 if(responses == null) {
+		    		 //set a default respose message
+		    		 //TODO add response codes and update the message
+		    		 responses = (JSONObject) parser.parse(Constants.DEFAULT_RESPONSE);
+		    	 }
+		    	 //pathItemObj.put("responses", responses);
+		    	 swagger2OperationsObj.put("responses", responses);
 
-                //TODO --------IMPORTANT --- where to put the throttling_tier, auth_type, scope
-                //inside the operation object in 1.2 api def
-                String scope = null;
-                if (operationObject.containsKey("scope")) {
-                    scope = (String) operationObject.get("scope");
-                }
-                String throttlingTier = (String) operationObject.get("throttling_tier");
-                String authType = (String) operationObject.get("auth_type");
+		    	 //TODO --------IMPORTANT --- where to put the throttling_tier, auth_type, scope
+		    	 //inside the operation object in 1.2 api def
+		    	 String scope = null;
+		    	 if(operation.containsKey("scope")){
+		    		 scope = (String) operation.get("scope");
+		    	 }
+		    	 String throttlingTier = (String) operation.get("throttling_tier");
+		    	 String authType = (String) operation.get("auth_type");
 
-                //set the security object. These above mention params might be a part of the
-                //security objec??
-                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#securityRequirementObject
-                JSONArray swagger2securityObj = new JSONArray();
-                //pathItemObj.put("security", new JSONArray());
-                //----------------------------------------------------------------
-            }
+		    	 //set the security object. These above mention params might be a part of the
+		    	 //security objec??
+		    	 //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#securityRequirementObject
+		    	 JSONArray swagger2securityObj = new JSONArray();
+		    	 //pathItemObj.put("security", new JSONArray());
+		    	 //----------------------------------------------------------------
+			}
 		    pathObj.put(key, pathItemObj);
 		}		
 		
