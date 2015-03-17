@@ -469,6 +469,7 @@ public class Swagger19Migration {
 	}
 
 
+    //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#paths-object
     private static JSONObject generatePathsObj(Map<String, JSONArray> apiDefinitionPaths) throws ParseException {
         JSONObject pathsObj = new JSONObject();
         JSONParser jsonParser = new JSONParser();
@@ -476,6 +477,7 @@ public class Swagger19Migration {
         for (Map.Entry<String, JSONArray> entry : apiDefinitionPaths.entrySet()) {
             String key = entry.getKey();
             JSONArray operations = entry.getValue();
+            //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#path-item-object
             JSONObject pathItemObj = new JSONObject();
 
             for (Object operation : operations) {
@@ -501,12 +503,65 @@ public class Swagger19Migration {
                     newParameters.add(paramObj);
 
                 }
+
+                //generate the Operation object
+                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#operationObject
+                swagger2OperationsObj.put("operationId", operationObject.get("nickname"));
+                //setting operation level params
+                swagger2OperationsObj.put("parameters", newParameters);
+
+                if(operationObject.containsKey("notes")){
+                    swagger2OperationsObj.put("description", operationObject.get("notes"));
+                }
+                if(operationObject.containsKey("summary")){
+                    swagger2OperationsObj.put("summary", operationObject.get("summary"));
+                }
+
+                //set pathItem object for the resource
+                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathItemObject
+                pathItemObj.put(method.toLowerCase(), swagger2OperationsObj);
+                //TODO Check this param. A list of parameters that are applicable for all the
+                //operations described under this path. These parameters can be overridden at the
+                //operation level
+                pathItemObj.put("parameters", new JSONArray());
+
+                //set the responseMessages. this is a required field. Set a default value if empty
+                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#responsesObject
+                JSONObject responses = null;
+                if(operationObject.containsKey("responseMessages")){
+                    responses = new JSONObject();
+                    JSONArray responseMessages = (JSONArray) operationObject.get("responseMessages");
+                    for(int x = 0; x < responseMessages.size(); x++){
+                        JSONObject errorObj = (JSONObject) responseMessages.get(x);
+                        responses.put(errorObj.get("code"), errorObj.get("message"));
+                    }
+                }
+                if(responses == null) {
+                    //set a default response message
+                    //TODO add response codes and update the message
+                    responses = (JSONObject) jsonParser.parse(Constants.DEFAULT_RESPONSE);
+                }
+                //pathItemObj.put("responses", responses);
+                swagger2OperationsObj.put("responses", responses);
+
+                //TODO --------IMPORTANT --- where to put the throttling_tier, auth_type, scope
+                //inside the operation object in 1.2 api def
+                String scope = null;
+                if(operationObject.containsKey("scope")){
+                    scope = (String) operationObject.get("scope");
+                }
+                String throttlingTier = (String) operationObject.get("throttling_tier");
+                String authType = (String) operationObject.get("auth_type");
+
+                //set the security object. These above mention params might be a part of the
+                //security objec??
+                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#securityRequirementObject
+                JSONArray swagger2securityObj = new JSONArray();
+                //pathItemObj.put("security", new JSONArray());
+                //----------------------------------------------------------------
             }
-
-
+            pathsObj.put(key, pathItemObj);
         }
-
-
         return pathsObj;
     }
  
