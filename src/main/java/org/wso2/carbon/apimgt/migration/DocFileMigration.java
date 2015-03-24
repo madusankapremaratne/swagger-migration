@@ -249,8 +249,6 @@ public class DocFileMigration {
                         }
                     } catch (APIManagementException e) {
                         log.error(e.getMessage(), e);
-                    } catch (SQLException e) {
-                        log.error(e.getMessage(), e);
                     } catch (RegistryException e) {
                         log.error(e.getMessage(), e);
                     } catch (Exception e) {
@@ -268,7 +266,7 @@ public class DocFileMigration {
     }
 
     public static API getAPI(GovernanceArtifact artifact, Registry registry)
-            throws APIManagementException, SQLException {
+            throws APIManagementException {
 
         API api;
         try {

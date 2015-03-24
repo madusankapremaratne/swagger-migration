@@ -261,7 +261,7 @@ public class ResourceUtil {
 					JSONObject operationObj11 = allOperations.get(key);
 					//add summery
 					if(operationObj11.containsKey("summary")) {
-						operation.put("summary", (String) operationObj11.get("summery"));
+						operation.put("summary", operationObj11.get("summery"));
 					}
 					
 				}
@@ -283,13 +283,10 @@ public class ResourceUtil {
 	 */
 	public static String getSwagger12ResourceLocation(String apiName, String apiVersion,
 	                                                  String apiProvider) {
-		String resourcePath =
-				APIConstants.API_DOC_LOCATION + RegistryConstants.PATH_SEPARATOR +
+        return APIConstants.API_DOC_LOCATION + RegistryConstants.PATH_SEPARATOR +
 				apiName + "-" + apiVersion + "-" + apiProvider +
 				RegistryConstants.PATH_SEPARATOR +
 				APIConstants.API_DOC_1_2_LOCATION;
-
-		return resourcePath;
 	}
 
 	/**
@@ -361,7 +358,7 @@ public class ResourceUtil {
 			
 			//get the description for that resource. query the api list generated using api-doc 1.1
 			if(apisByPath.containsKey(key)) {
-				JSONObject apiInfo = (JSONObject) apisByPath.get(key);
+				JSONObject apiInfo = apisByPath.get(key);
 				description = (String) apiInfo.get("description");
 				descriptionsForResource.put(resourceName, description);
 			}
@@ -524,13 +521,11 @@ public class ResourceUtil {
 	 */
 	public static String getSwagger2ResourceLocation(String apiName, String apiVersion,
 	                                                  String apiProvider) {
-		String resourcePath =
-				APIConstants.API_DOC_LOCATION + RegistryConstants.PATH_SEPARATOR +
-				apiName + "-" + apiVersion + "-" + apiProvider +
-				RegistryConstants.PATH_SEPARATOR +
-				"2.0" + RegistryConstants.PATH_SEPARATOR + "swagger.json";
-
-		return resourcePath;
-	}
+        return
+                APIConstants.API_DOC_LOCATION + RegistryConstants.PATH_SEPARATOR +
+                        apiName + "-" + apiVersion + "-" + apiProvider +
+                        RegistryConstants.PATH_SEPARATOR +
+                        "2.0" + RegistryConstants.PATH_SEPARATOR + "swagger.json";
+    }
 	
 }

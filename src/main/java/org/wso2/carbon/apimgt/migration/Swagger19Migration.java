@@ -156,8 +156,6 @@ public class Swagger19Migration {
 
                     } catch (APIManagementException e) {
                         log.error("APIManagementException while migrating api in " + tenant.getDomain(), e);
-                    } catch (SQLException e) {
-                        log.error("SQL exception for " + tenant.getDomain(), e);
                     } catch (RegistryException e) {
                         log.error("RegistryException while getting api resource for " + tenant.getDomain(), e);
                     } catch (ParseException e) {
@@ -178,7 +176,7 @@ public class Swagger19Migration {
     }
 
     public static API getAPI(GovernanceArtifact artifact, Registry registry)
-            throws APIManagementException, SQLException {
+            throws APIManagementException {
 
         API api;
         try {
@@ -366,10 +364,10 @@ public class Swagger19Migration {
         swagger2InfoObj.put("version", version);
 
         if (infoObj.containsKey("description")) {
-            swagger2InfoObj.put("description", (String) infoObj.get("description"));
+            swagger2InfoObj.put("description", infoObj.get("description"));
         }
         if (infoObj.containsKey("termsOfServiceUrl")) {
-            swagger2InfoObj.put("termsOfService", (String) infoObj.get("termsOfServiceUrl"));
+            swagger2InfoObj.put("termsOfService", infoObj.get("termsOfServiceUrl"));
         }
 
         //contact object

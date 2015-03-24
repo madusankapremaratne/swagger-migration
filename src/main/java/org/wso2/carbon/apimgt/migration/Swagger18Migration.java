@@ -136,9 +136,7 @@ public class Swagger18Migration {
 	                    
 	                    
 					} catch (APIManagementException e) {
-						log.error("APIManagementException while migrating api in " + tenant.getDomain() , e);	
-					} catch (SQLException e) {
-						log.error("SQL exception for " + tenant.getDomain(), e);
+						log.error("APIManagementException while migrating api in " + tenant.getDomain() , e);
 					} catch (RegistryException e) {
 						log.error("RegistryException while getting api resource for " + tenant.getDomain() , e);
 					} catch (ParseException e) {
@@ -160,7 +158,7 @@ public class Swagger18Migration {
 
 
     public static API getAPI(GovernanceArtifact artifact, Registry registry)
-            throws APIManagementException, SQLException {
+            throws APIManagementException {
 
         API api;
         try {
