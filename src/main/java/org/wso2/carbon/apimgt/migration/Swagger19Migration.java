@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  * 
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -492,7 +492,7 @@ public class Swagger19Migration {
                 String authType = (String) operationObject.get("auth_type");
 
                 //set the security object. These above mention params might be a part of the
-                //security objec??
+                //security object??
                 //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#securityRequirementObject
                 JSONArray swagger2securityObj = new JSONArray();
                 //pathItemObj.put("security", new JSONArray());

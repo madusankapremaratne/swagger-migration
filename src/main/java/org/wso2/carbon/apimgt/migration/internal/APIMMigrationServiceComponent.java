@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.carbon.apimgt.migration.internal;
 
 import org.apache.commons.logging.Log;
@@ -46,10 +63,10 @@ public class APIMMigrationServiceComponent {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String migrate = System.getProperty("migrate");
-        log.info("********** Migrate version => " + migrate + " **********");
-        if (migrate != null && migrate.equalsIgnoreCase(Constants.VERSION_1_6)) {
-            log.info("*** Migrating API-M 1.6 swagger and documentation resources to API-M 1.7 ***");
+        String migrateVersion = System.getProperty("migrate");
+        log.info("Migrate version => " + migrateVersion);
+        if (migrateVersion != null && migrateVersion.equalsIgnoreCase(Constants.VERSION_1_6)) {
+            log.info("Migrating API-M 1.6 swagger and documentation resources to API-M 1.7");
             SwaggerResMigration swaggerMigration = new SwaggerResMigration();
             DocFileMigration docMigration = new DocFileMigration();
             try {
@@ -58,8 +75,8 @@ public class APIMMigrationServiceComponent {
             } catch (UserStoreException e) {
                 e.printStackTrace();
             }
-        } else if (migrate != null && migrate.equalsIgnoreCase(Constants.VERSION_1_7)) {
-            log.info("*** Migrating API-M 1.7 Swagger resources to API-M 1.8 ***");
+        } else if (migrateVersion != null && migrateVersion.equalsIgnoreCase(Constants.VERSION_1_7)) {
+            log.info("Migrating API-M 1.7 Swagger resources to API-M 1.8");
             // Create a thread and wait till the API-M DBUtils is initialized
             try {
                 Swagger18Migration swagger18Migration = new Swagger18Migration();
@@ -71,8 +88,8 @@ public class APIMMigrationServiceComponent {
             }
 
 
-        } else if (migrate != null && migrate.equalsIgnoreCase(Constants.VERSION_1_8)) {
-            log.info("*** Migrating API-M 1.8 Swagger resources to API-M 1.9 ***");
+        } else if (migrateVersion != null && migrateVersion.equalsIgnoreCase(Constants.VERSION_1_8)) {
+            log.info("Migrating API-M 1.8 Swagger resources to API-M 1.9");
             // Create a thread and wait till the API-M DBUtils is initialized
             try {
                 Swagger19Migration swagger19Migration = new Swagger19Migration();
@@ -82,10 +99,8 @@ public class APIMMigrationServiceComponent {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
         }
-        log.info("*** API-M migration bundle activated successfully ***");
+        log.info("API-M migration bundle activated successfully");
     }
 
     /**
@@ -94,7 +109,7 @@ public class APIMMigrationServiceComponent {
      * @param context OSGi component context.
      */
     protected void deactivate(ComponentContext context) {
-        log.debug("*** API-M migration bundle is deactivated ***");
+        log.debug("API-M migration bundle is deactivated");
     }
 
     /**
@@ -103,7 +118,7 @@ public class APIMMigrationServiceComponent {
      * @param registryService service to get tenant data.
      */
     protected void setRegistryService(RegistryService registryService) {
-        log.debug("*** Setting RegistryService ***");
+        log.debug("Setting RegistryService for API-M migration");
         ServiceHolder.setRegistryService(registryService);
     }
 
@@ -113,7 +128,7 @@ public class APIMMigrationServiceComponent {
      * @param registryService service to get registry data.
      */
     protected void unsetRegistryService(RegistryService registryService) {
-        log.debug("*** Unset Registry service ***");
+        log.debug("Unset Registry service");
         ServiceHolder.setRegistryService(null);
     }
 
@@ -123,7 +138,7 @@ public class APIMMigrationServiceComponent {
      * @param realmService service to get tenant data.
      */
     protected void setRealmService(RealmService realmService) {
-        log.debug("*** Setting RealmService ***");
+        log.debug("Setting RealmService for API-M migration");
         ServiceHolder.setRealmService(realmService);
     }
 
@@ -143,7 +158,7 @@ public class APIMMigrationServiceComponent {
      * @param tenantRegLoader tenant registry loader
      */
     protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegLoader) {
-        log.debug("*** Setting TenantRegistryLoader ***");
+        log.debug("Setting TenantRegistryLoader for API-M migration");
         ServiceHolder.setTenantRegLoader(tenantRegLoader);
     }
 
