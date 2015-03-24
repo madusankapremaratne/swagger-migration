@@ -152,13 +152,12 @@ public class SwaggerResMigration {
     }
 
     private static String getAPIDefinitionFilePath(String apiName, String apiVersion, String apiProvider) {
-        String resourcePath = APIConstants.API_DOC_LOCATION + RegistryConstants.PATH_SEPARATOR +
+       return APIConstants.API_DOC_LOCATION + RegistryConstants.PATH_SEPARATOR +
                               apiName + "-" + apiVersion + RegistryConstants.PATH_SEPARATOR + APIConstants.API_DOC_RESOURCE_NAME;
-        return resourcePath;
     }
 
     public static API getAPI(GovernanceArtifact artifact, Registry registry)
-            throws APIManagementException, SQLException {
+            throws APIManagementException {
 
         API api;
         try {
@@ -226,10 +225,7 @@ public class SwaggerResMigration {
      * @throws UserStoreException 
      * @throws RegistryException
      * @throws APIManagementException
-     * @throws LoginAuthenticationExceptionException
-     * @throws ResourceAdminServiceResourceServiceExceptionException
      * @throws SQLException
-     * @throws IOException
      */
     private static void createResource(Registry re, String content, String resourcePath, API api, Tenant tenant) throws UserStoreException{
     	
@@ -262,10 +258,7 @@ public class SwaggerResMigration {
      * @param api
      * @throws APIManagementException
      * @throws RegistryException
-     * @throws LoginAuthenticationExceptionException
-     * @throws ResourceAdminServiceResourceServiceExceptionException
      * @throws SQLException
-     * @throws IOException
      * @throws UserStoreException 
      */
 	public static void createSwagger12Resources(GovernanceArtifact artifact, Registry registry,
@@ -325,7 +318,7 @@ public class SwaggerResMigration {
 	        		path = "/*";
 	        	}
 	    		List<String> resourcePaths;
-	    		int resourceNameEndIndex = path.indexOf("/", 1);
+                int resourceNameEndIndex = path.indexOf("/", 1);
 	    		String resourceName = "/default";
 	    		if(resourceNameEndIndex != -1) {
 	    			resourceName = path.substring(1, resourceNameEndIndex);
