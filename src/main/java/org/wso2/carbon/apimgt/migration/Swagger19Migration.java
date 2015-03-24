@@ -60,7 +60,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class responsible to migrate swagger v1.2 documents to swagger v2.0 document and set it to a 
+ * Class responsible to migrate swagger v1.2 documents to swagger v2.0 document and set it to a
  * new swagger v2.0 location.  Swagger v2.0 doc is generated according to the <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">Swagger 2 Specification</a>
  */
 public class Swagger19Migration {
@@ -99,37 +99,37 @@ public class Swagger19Migration {
                     API api;
 					try {
 						api = getAPI(artifact, registry);
-					
+
 	                    //API api = APIUtil.getAPI(artifact);
 	                    APIIdentifier adiIdentifier = api.getId();
-	
-	            
+
+
 	                    String swagger12location = ResourceUtil.getSwagger12ResourceLocation(
                                 adiIdentifier.getApiName(),
                                 adiIdentifier.getVersion(),
                                 adiIdentifier.getProviderName());
-	
-	                        
-	                    
+
+
+
 	                    if(!registry.resourceExists(swagger12location)) {
 	                        log.error("Swagger Resource migration has not happen yet for " +
 	                        		adiIdentifier.getApiName() + "-" + adiIdentifier.getVersion() + "-"
 	                        		+ adiIdentifier.getProviderName() +
 	                        		". Please run -D" + Constants.VERSION_1_6 + " first");
-	                        
+
 	                    } else {
 	                    	log.info("Creating swagger v2.0 resource for : " + adiIdentifier.getApiName() + "-" +
 		        					adiIdentifier.getVersion() + "-" + adiIdentifier.getProviderName());
 	                    	//get swagger v2 doc
 	                    	String swagger2doc = getSwagger2docUsingSwagger12RegistryResources(registry, swagger12location);
-	                    	
-	                    	
+
+
 	                    	//create location in registry and add this
 	                    	String swagger2location = ResourceUtil.getSwagger2ResourceLocation(
 																adiIdentifier.getApiName(),
 							                                    adiIdentifier.getVersion(),
 							                                    adiIdentifier.getProviderName());
-	                    	
+
 	                    	Resource docContent = registry.newResource();
 		                    docContent.setContent(swagger2doc);
 		                    docContent.setMediaType("application/json");
@@ -145,12 +145,12 @@ public class Swagger19Migration {
 		                            ActionConstants.GET);
 		                    log.info("Created swagger v2.0 resource for : " + adiIdentifier.getApiName() + "-" +
 		        					adiIdentifier.getVersion() + "-" + adiIdentifier.getProviderName());
-		                    
-	                    } 
-	                    
-	                    
+
+	                    }
+
+
 					} catch (APIManagementException e) {
-						log.error("APIManagementException while migrating api in " + tenant.getDomain() , e);	
+						log.error("APIManagementException while migrating api in " + tenant.getDomain() , e);
 					} catch (SQLException e) {
 						log.error("SQL exception for " + tenant.getDomain(), e);
 					} catch (RegistryException e) {
@@ -160,7 +160,7 @@ public class Swagger19Migration {
 					} catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
-                }  
+                }
             } catch (RegistryException e) {
             	log.error("RegistryException while getting artifacts for  " + tenant.getDomain() , e);
 			} catch (Exception e) {
@@ -210,47 +210,47 @@ public class Swagger19Migration {
     private String getSwagger2docUsingSwagger12RegistryResources(Registry registry, String swagger12location)
     		throws MalformedURLException, ParseException, RegistryException {
 
-		JSONParser parser = new JSONParser();		
+		JSONParser parser = new JSONParser();
     	String swagger12BasePath = null;
-    	
+
     	Resource swaggerRes = registry.get(swagger12location + APIConstants.API_DOC_1_2_RESOURCE_NAME );
 		JSONObject swagger12doc = (JSONObject) parser.parse(new String((byte[]) swaggerRes.getContent()));
-		
+
 		Map<String, JSONArray> apiDefsPaths = new HashMap<String, JSONArray>();
-		
+
 		Resource swagger12Res = registry.get(swagger12location);
 		//get all the resources inside the 1.2 resource location
         String[] apiDefs = (String[]) swagger12Res.getContent();
-	
+
 		//get each resource in the 1.2 folder except the api-doc resource
 		for (int i = 0; i < apiDefs.length; i++) {
-			
+
 			String resourceName = apiDefs[i].substring(apiDefs[i].lastIndexOf("/"));
 			//skip if api-doc file
-			if (resourceName.equals(APIConstants.API_DOC_1_2_RESOURCE_NAME)) {				
+			if (resourceName.equals(APIConstants.API_DOC_1_2_RESOURCE_NAME)) {
 				continue;
 			}
-	
+
 			Resource resource = registry.get(apiDefs[i]);
 			JSONObject apidef =
 					(JSONObject) parser.parse(new String((byte[]) resource.getContent()));
-			//get the basepath. this is same for all api definitions. 
+			//get the basepath. this is same for all api definitions.
 			swagger12BasePath = (String) apidef.get("basePath");
 			JSONArray apis = (JSONArray)apidef.get("apis");
 			for(int j = 0; j < apis.size(); j ++ ) {
 				JSONObject api = (JSONObject) apis.get(j);
 				String path =  (String) api.get("path");
 				JSONArray operations = (JSONArray) api.get("operations");
-				//set the operations object inside each api definitions resource and set it 
+				//set the operations object inside each api definitions resource and set it
 				//in a map againts its resource path
-				apiDefsPaths.put(path, operations);				
-			}	
-			
+				apiDefsPaths.put(path, operations);
+			}
+
 		}
-		
-		
+
+
 		JSONObject swagger2Doc = generateSwagger2Document(swagger12doc, apiDefsPaths, swagger12BasePath);
-		
+
 		return swagger2Doc.toJSONString();
 	}
 
@@ -271,40 +271,69 @@ public class Swagger19Migration {
 
 		//set swagger version
 	    swagger20doc.put("swagger", "2.0");
-		
+
 		//set the info object
 		JSONObject info =  generateInfoObject(swagger12doc);
-		//update info object		
+		//update info object
 		swagger20doc.put("info", info);
-		
+
 		//set the paths object
 		JSONObject pathObj = generatePathsObj(apiDefsPaths);
 		swagger20doc.put("paths", pathObj);
-		
+
 		URL url = new URL(swagger12BasePath);
 		swagger20doc.put("host", url.getHost());
 		swagger20doc.put("basePath", url.getPath());
-		
+
 		JSONArray schemes = new JSONArray();
 		schemes.add(url.getProtocol());
-		swagger20doc.put("schemes", schemes);		
-		
+		swagger20doc.put("schemes", schemes);
+
 		//securityDefinitions
 		if(swagger12doc.containsKey("authorizations")){
-			JSONObject securityDefinitions = new JSONObject();
-			
-			JSONObject authorizations = (JSONObject) swagger12doc.get("authorizations");
+			//JSONObject securityDefinitions = new JSONObject();
+            JSONObject securityDefinitions = generateSecurityDefinitionsObject(swagger12doc);
+
+			/*JSONObject authorizations = (JSONObject) swagger12doc.get("authorizations");
 			Set authTypes = authorizations.keySet();
 			for (Object obj : authTypes) {
 				JSONObject authObj = (JSONObject) authorizations.get(obj.toString());
 				String type = (String) authObj.get("type");
 				//TODO continue from here
-			}
-		    swagger20doc.put("securityDefinitions", securityDefinitions);		
+			}*/
+		    swagger20doc.put("securityDefinitions", securityDefinitions);
 		}
-		
+
 		return swagger20doc;
 	}
+
+    /**
+     * Generate swagger v2 security definition object
+     * https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#securityDefinitionsObject
+     *
+     * @param swagger12doc Old Swagger Document
+     * @return security definition object
+     * @throws ParseException
+     */
+    private static JSONObject generateSecurityDefinitionsObject(JSONObject swagger12doc) throws ParseException {
+
+        JSONParser parser = new JSONParser();
+        JSONObject securityDefinitionObject = new JSONObject();
+        String securitySchemeObjectInfo = "{\"type\" : \"\", \"description\" : \"\", \"name\" : \"\", \"in\" : \"\", \"flow\" : \"\", \"authorizationUrl\" : \"\", \"tokenUrl\" : \"\", \"scopes\" : \"\"}";
+        JSONObject securitySchemeObject = (JSONObject) parser.parse(securitySchemeObjectInfo);
+
+        JSONObject authorizations = (JSONObject) swagger12doc.get("authorizations");
+        Set authTypes = authorizations.keySet();
+
+        for (Object obj : authTypes) {
+            JSONObject authObj = (JSONObject) authorizations.get(obj.toString());
+            if (authObj.containsKey("scopes")) {
+                securitySchemeObject.put("scopes", authObj.get("scopes"));
+            }
+            securityDefinitionObject.put(obj.toString(), securitySchemeObject);
+        }
+        return securityDefinitionObject;
+    }
 
 	/**
 	 * generate swagger v2 info object using swagger 1.2 doc.
@@ -314,27 +343,27 @@ public class Swagger19Migration {
 	 * @throws ParseException
 	 */
 	private static JSONObject generateInfoObject(JSONObject swagger12doc) throws ParseException {
-		
+
 		JSONObject infoObj = (JSONObject) swagger12doc.get("info");
 		JSONParser parser = new JSONParser();
 		String swagger2Info = "{\"title\" : \"\", \"version\" : \"\"}";
-		
+
 		JSONObject swagger2InfoObj = (JSONObject) parser.parse(swagger2Info);
-		
+
 		//set the required parameters first
 		String title = (String) infoObj.get("title");
 		String version = (String) swagger12doc.get("apiVersion");
-		
+
 		swagger2InfoObj.put("title", title);
 		swagger2InfoObj.put("version", version);
-		
+
 		if(infoObj.containsKey("description")){
 			swagger2InfoObj.put("description", (String) infoObj.get("description"));
 		}
 		if(infoObj.containsKey("termsOfServiceUrl")){
 			swagger2InfoObj.put("termsOfService", (String) infoObj.get("termsOfServiceUrl"));
 		}
-		
+
 		//contact object
 		if(infoObj.containsKey("contact")){
 			JSONObject contactsObj = new JSONObject();
@@ -346,10 +375,10 @@ public class Swagger19Migration {
 			} else {
 				contactsObj.put("name", contact);
 			}
-			
+
 			swagger2InfoObj.put("contact", contactsObj);
 		}
-		
+
 		//licence object
 		JSONObject licenseObj = new JSONObject();
 		if(infoObj.containsKey("license")){
@@ -360,8 +389,8 @@ public class Swagger19Migration {
 		}
 		if(!licenseObj.isEmpty()){
 			swagger2InfoObj.put("license", licenseObj);
-		}	
-	
+		}
+
 		return swagger2InfoObj;
 	}
 	/*
@@ -557,5 +586,5 @@ public class Swagger19Migration {
         }
         return pathsObj;
     }
- 
+
 }
