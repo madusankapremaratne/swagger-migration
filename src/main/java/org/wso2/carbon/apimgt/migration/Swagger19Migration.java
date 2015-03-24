@@ -101,34 +101,34 @@ public class Swagger19Migration {
 						api = getAPI(artifact, registry);
 					
 	                    //API api = APIUtil.getAPI(artifact);
-	                    APIIdentifier apiIdentfier = api.getId();
+	                    APIIdentifier adiIdentifier = api.getId();
 	
 	            
 	                    String swagger12location = ResourceUtil.getSwagger12ResourceLocation(
-	                    										apiIdentfier.getApiName(),
-	                                                            apiIdentfier.getVersion(),
-	                                                            apiIdentfier.getProviderName());
+                                adiIdentifier.getApiName(),
+                                adiIdentifier.getVersion(),
+                                adiIdentifier.getProviderName());
 	
 	                        
 	                    
 	                    if(!registry.resourceExists(swagger12location)) {
 	                        log.error("Swagger Resource migration has not happen yet for " +
-	                        		apiIdentfier.getApiName() + "-" + apiIdentfier.getVersion() + "-" 
-	                        		+ apiIdentfier.getProviderName() + 
+	                        		adiIdentifier.getApiName() + "-" + adiIdentifier.getVersion() + "-"
+	                        		+ adiIdentifier.getProviderName() +
 	                        		". Please run -D" + Constants.VERSION_1_6 + " first");
 	                        
 	                    } else {
-	                    	log.info("Creating swagger v2.0 resource for : " + apiIdentfier.getApiName() + "-" +
-		        					apiIdentfier.getVersion() + "-" + apiIdentfier.getProviderName());   
+	                    	log.info("Creating swagger v2.0 resource for : " + adiIdentifier.getApiName() + "-" +
+		        					adiIdentifier.getVersion() + "-" + adiIdentifier.getProviderName());
 	                    	//get swagger v2 doc
-	                    	String swagger2doc = getSwagger2docUsingSwagger12RegistryResouces(registry, swagger12location);
+	                    	String swagger2doc = getSwagger2docUsingSwagger12RegistryResources(registry, swagger12location);
 	                    	
 	                    	
 	                    	//create location in registry and add this
 	                    	String swagger2location = ResourceUtil.getSwagger2ResourceLocation(
-																apiIdentfier.getApiName(),
-							                                    apiIdentfier.getVersion(),
-							                                    apiIdentfier.getProviderName());
+																adiIdentifier.getApiName(),
+							                                    adiIdentifier.getVersion(),
+							                                    adiIdentifier.getProviderName());
 	                    	
 	                    	Resource docContent = registry.newResource();
 		                    docContent.setContent(swagger2doc);
@@ -143,8 +143,8 @@ public class Swagger19Migration {
 		                    		tenant.getId()).getAuthorizationManager().authorizeRole(APIConstants.ANONYMOUS_ROLE,
 		                    		"_system/governance" + swagger2location,
 		                            ActionConstants.GET);
-		                    log.info("Created swagger v2.0 resource for : " + apiIdentfier.getApiName() + "-" +
-		        					apiIdentfier.getVersion() + "-" + apiIdentfier.getProviderName());   
+		                    log.info("Created swagger v2.0 resource for : " + adiIdentifier.getApiName() + "-" +
+		        					adiIdentifier.getVersion() + "-" + adiIdentifier.getProviderName());
 		                    
 	                    } 
 	                    
@@ -207,11 +207,11 @@ public class Swagger19Migration {
     }
 
 
-    private String getSwagger2docUsingSwagger12RegistryResouces(Registry registry, String swagger12location)
+    private String getSwagger2docUsingSwagger12RegistryResources(Registry registry, String swagger12location)
     		throws MalformedURLException, ParseException, RegistryException {
 
 		JSONParser parser = new JSONParser();		
-    	String swagger12basepath = null;
+    	String swagger12BasePath = null;
     	
     	Resource swaggerRes = registry.get(swagger12location + APIConstants.API_DOC_1_2_RESOURCE_NAME );
 		JSONObject swagger12doc = (JSONObject) parser.parse(new String((byte[]) swaggerRes.getContent()));
@@ -235,7 +235,7 @@ public class Swagger19Migration {
 			JSONObject apidef =
 					(JSONObject) parser.parse(new String((byte[]) resource.getContent()));
 			//get the basepath. this is same for all api definitions. 
-			swagger12basepath = (String) apidef.get("basePath");
+			swagger12BasePath = (String) apidef.get("basePath");
 			JSONArray apis = (JSONArray)apidef.get("apis");
 			for(int j = 0; j < apis.size(); j ++ ) {
 				JSONObject api = (JSONObject) apis.get(j);
@@ -249,7 +249,7 @@ public class Swagger19Migration {
 		}
 		
 		
-		JSONObject swagger2Doc = generateSwagger2Document(swagger12doc, apiDefsPaths, swagger12basepath);
+		JSONObject swagger2Doc = generateSwagger2Document(swagger12doc, apiDefsPaths, swagger12BasePath);
 		
 		return swagger2Doc.toJSONString();
 	}
@@ -259,13 +259,13 @@ public class Swagger19Migration {
 	 * Generate Swagger v2.0 document using Swagger v1.2 resources
 	 * @param swagger12doc
 	 * @param apiDefsPaths
-	 * @param swagger12basepath
+	 * @param swagger12BasePath
 	 * @return Swagger v2.0 document as a JSON object
 	 * @throws ParseException
 	 * @throws MalformedURLException
 	 */
 	private static JSONObject generateSwagger2Document(JSONObject swagger12doc,
-			Map<String, JSONArray> apiDefsPaths, String swagger12basepath) throws ParseException, MalformedURLException {
+			Map<String, JSONArray> apiDefsPaths, String swagger12BasePath) throws ParseException, MalformedURLException {
 		//create swagger 2.0 doc
 		JSONObject swagger20doc = new JSONObject();
 
@@ -281,7 +281,7 @@ public class Swagger19Migration {
 		JSONObject pathObj = generatePathsObj(apiDefsPaths);
 		swagger20doc.put("paths", pathObj);
 		
-		URL url = new URL(swagger12basepath);
+		URL url = new URL(swagger12BasePath);
 		swagger20doc.put("host", url.getHost());
 		swagger20doc.put("basePath", url.getPath());
 		
@@ -364,14 +364,7 @@ public class Swagger19Migration {
 	
 		return swagger2InfoObj;
 	}
-	
-	/**
-	 * generate swagger v2 paths object using swagger 1.2 doc.
-	 * See <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathsObject">Swagger 2 Specification</a>
-	 * @param apiDefsPaths map containing swagger v1.2 operations object against its resource path
-	 * @return swagger v2 pathsObject
-	 * @throws ParseException
-	 */
+	/*
 	private static JSONObject generatePathObj(Map<String, JSONArray> apiDefsPaths) throws ParseException {
 		JSONObject pathObj = new JSONObject();
 		JSONParser parser = new JSONParser();
@@ -467,7 +460,7 @@ public class Swagger19Migration {
 		
 		return pathObj;
 	}
-
+*/
 
     //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#paths-object
     private static JSONObject generatePathsObj(Map<String, JSONArray> apiDefinitionPaths) throws ParseException {
