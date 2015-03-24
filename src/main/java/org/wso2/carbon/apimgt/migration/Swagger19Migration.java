@@ -67,6 +67,12 @@ public class Swagger19Migration {
     private static final Log log = LogFactory.getLog(Swagger19Migration.class);
 
 
+    /**
+     * Migrates the APIs to new version
+     *
+     * @throws UserStoreException
+     * @throws InterruptedException
+     */
     public void migrate() throws UserStoreException, InterruptedException {
         log.info("Swagger migration for AM 1.9 started");
 
@@ -205,6 +211,16 @@ public class Swagger19Migration {
         return api;
     }
 
+    /**
+     * Generates swagger v2 doc using swagger 1.2 doc
+     *
+     * @param registry          governance registry
+     * @param swagger12location the location of swagger 1.2 doc
+     * @return JSON string of swagger v2 doc
+     * @throws MalformedURLException
+     * @throws ParseException
+     * @throws RegistryException
+     */
 
     private String getSwagger2docUsingSwagger12RegistryResources(Registry registry, String swagger12location)
             throws MalformedURLException, ParseException, RegistryException {
@@ -387,6 +403,7 @@ public class Swagger19Migration {
     /**
      * Generate Swagger v2 paths object from swagger v1.2 document
      * See <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#paths-object">Swagger v2 paths object</a>
+     *
      * @param apiDefinitionPaths API definition paths
      * @return swagger v2 paths object
      * @throws ParseException
