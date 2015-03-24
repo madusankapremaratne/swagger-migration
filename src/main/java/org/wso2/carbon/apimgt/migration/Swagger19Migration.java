@@ -219,18 +219,18 @@ public class Swagger19Migration {
 
         Resource swagger12Res = registry.get(swagger12location);
         //get all the resources inside the 1.2 resource location
-        String[] apiDefs = (String[]) swagger12Res.getContent();
+        String[] apiDefinitions = (String[]) swagger12Res.getContent();
 
         //get each resource in the 1.2 folder except the api-doc resource
-        for (int i = 0; i < apiDefs.length; i++) {
+        for (String apiDefinition : apiDefinitions) {
 
-            String resourceName = apiDefs[i].substring(apiDefs[i].lastIndexOf("/"));
+            String resourceName = apiDefinition.substring(apiDefinition.lastIndexOf("/"));
             //skip if api-doc file
             if (resourceName.equals(APIConstants.API_DOC_1_2_RESOURCE_NAME)) {
                 continue;
             }
 
-            Resource resource = registry.get(apiDefs[i]);
+            Resource resource = registry.get(apiDefinition);
             JSONObject apidef =
                     (JSONObject) parser.parse(new String((byte[]) resource.getContent()));
             //get the basepath. this is same for all api definitions.
