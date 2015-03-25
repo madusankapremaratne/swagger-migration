@@ -321,11 +321,10 @@ public class Swagger19Migration {
      * @throws ParseException
      */
     private static JSONObject generateSecurityDefinitionsObject(JSONObject swagger12doc) throws ParseException {
-
         JSONParser parser = new JSONParser();
         JSONObject securityDefinitionObject = new JSONObject();
-        String securitySchemeObjectInfo = "{\"type\" : \"\", \"description\" : \"\", \"name\" : \"\", \"in\" : \"\", \"flow\" : \"\", \"authorizationUrl\" : \"\", \"tokenUrl\" : \"\", \"scopes\" : \"\"}";
-        JSONObject securitySchemeObject = (JSONObject) parser.parse(securitySchemeObjectInfo);
+        //String securitySchemeObjectInfo = "{\"type\" : \"\", \"description\" : \"\", \"name\" : \"\", \"in\" : \"\", \"flow\" : \"\", \"authorizationUrl\" : \"\", \"tokenUrl\" : \"\", \"scopes\" : \"\"}";
+        JSONObject securitySchemeObject = (JSONObject) parser.parse(Constants.DEFAULT_SECURITY_SCHEME);
 
         JSONObject authorizations = (JSONObject) swagger12doc.get("authorizations");
         Set authTypes = authorizations.keySet();
@@ -352,9 +351,9 @@ public class Swagger19Migration {
 
         JSONObject infoObj = (JSONObject) swagger12doc.get("info");
         JSONParser parser = new JSONParser();
-        String swagger2Info = "{\"title\" : \"\", \"version\" : \"\"}";
+        //String swagger2Info = "{\"title\" : \"\", \"version\" : \"\"}";
 
-        JSONObject swagger2InfoObj = (JSONObject) parser.parse(swagger2Info);
+        JSONObject swagger2InfoObj = (JSONObject) parser.parse(Constants.DEFAULT_INFO);
 
         //set the required parameters first
         String title = (String) infoObj.get("title");
@@ -467,20 +466,19 @@ public class Swagger19Migration {
                 if (operationObject.containsKey("responseMessages")) {
                     responses = new JSONObject();
                     JSONArray responseMessages = (JSONArray) operationObject.get("responseMessages");
-                    for (int x = 0; x < responseMessages.size(); x++) {
-                        JSONObject errorObj = (JSONObject) responseMessages.get(x);
+                    for (Object responseMessage : responseMessages) {
+                        JSONObject errorObj = (JSONObject) responseMessage;
                         responses.put(errorObj.get("code"), errorObj.get("message"));
                     }
                 }
                 if (responses == null) {
                     //set a default response message
-                    //TODO add response codes and update the message
                     responses = (JSONObject) jsonParser.parse(Constants.DEFAULT_RESPONSE);
                 }
                 //pathItemObj.put("responses", responses);
                 swagger2OperationsObj.put("responses", responses);
 
-                //TODO --------IMPORTANT --- where to put the throttling_tier, auth_type, scope
+                //TODO ---IMPORTANT--- where to put the throttling_tier, auth_type, scope
                 //inside the operation object in 1.2 api def
                 String scope = null;
                 if (operationObject.containsKey("scope")) {
