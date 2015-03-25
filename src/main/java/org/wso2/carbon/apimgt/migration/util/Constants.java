@@ -82,13 +82,29 @@ public final class Constants {
 	public static final String VERSION_1_6 = "1.6";
 	public static final String VERSION_1_7 = "1.7";
 	public static final String VERSION_1_8 = "1.8";
-	
+
+
 	//constants for swagger v2
-	/**
-	 * default Swagger v2 repose parameter
-	 */
-	public static final String DEFAULT_RESPONSE = "{ \"200\": "
-			+ "{ \"description\": \"No response was specified\"} "
+	//default Swagger v2 response parameter
+	public static final String DEFAULT_RESPONSE = "{ " +
+            "\"200\": "
+			+ "{ " +
+            "\"description\": \"No response was specified\"} "
 			+ "}";
+
+    public static final String DEFAULT_SECURITY_SCHEME = "{" +
+            "\"type\" : \"\", " +
+            "\"description\" : \"\", " +
+            "\"name\" : \"\"," +
+            " \"in\" : \"\", " +
+            "\"flow\" : \"\", " +
+            "\"authorizationUrl\" : \"\", " +
+            "\"tokenUrl\" : \"\", " +
+            "\"scopes\" : \"\"}";
+
+    public static final String DEFAULT_INFO = "{" +
+            "\"title\" : \"\", " +
+            "\"version\" : \"\"" +
+            "}";
 
 }
