@@ -28,6 +28,7 @@ public class ServiceHolder {
     //Realm Service which is used to get tenant data.
     private static RealmService realmService;
 
+    //Tenant registry loader which is used to load tenant registry
     private static TenantRegistryLoader tenantRegLoader;
 
     /**

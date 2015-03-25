@@ -478,7 +478,7 @@ public class Swagger19Migration {
                 //pathItemObj.put("responses", responses);
                 swagger2OperationsObj.put("responses", responses);
 
-                //TODO ---IMPORTANT--- where to put the throttling_tier, auth_type, scope
+                //TODO :  where to put the throttling_tier, auth_type, scope
                 //inside the operation object in 1.2 api def
                 String scope = null;
                 if (operationObject.containsKey("scope")) {

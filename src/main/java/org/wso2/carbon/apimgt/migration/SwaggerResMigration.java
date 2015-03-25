@@ -67,7 +67,7 @@ public class SwaggerResMigration {
     private static final Log log = LogFactory.getLog(SwaggerResMigration.class);
 
     public void migrate() throws UserStoreException{
-        log.info("*** In migrate() of SwaggerResMigration ***");
+        log.info("In migrate() of SwaggerResMigration");
 
         TenantManager tenantManager = ServiceHolder.getRealmService().getTenantManager();
         Tenant[] tenantsArray = tenantManager.getAllTenants();
@@ -80,7 +80,7 @@ public class SwaggerResMigration {
         allTenantsArray[allTenantsArray.length - 1] = superTenant;
 
         for (Tenant tenant : allTenantsArray) {
-            log.info("*** Swagger resource migration for tenant " + tenant.getDomain() + "[" + tenant.getId() + "]" + " ***");
+            log.info("Swagger resource migration for tenant " + tenant.getDomain() + "[" + tenant.getId() + "]");
             try {
                 //Start a new tenant flow
                 PrivilegedCarbonContext.startTenantFlow();
@@ -121,13 +121,13 @@ public class SwaggerResMigration {
                   
                    
                     	//add swagger 1.2 resources    
-	                    log.info("***********Creating swagger 1.2 docs resources for : " + apiIdentfier.getApiName() + "-" +
+	                    log.info("Creating swagger 1.2 docs resources for : " + apiIdentfier.getApiName() + "-" +
 	        					apiIdentfier.getVersion() + "-" + apiIdentfier.getProviderName());                	
 	                
 						createSwagger12Resources(artifact, registry, api, tenant);					
 	                	
 	                	//merge swagger 1.1 content with 1.2 resources   
-	                	log.info("***********Updating swagger 1.2 docs resource for : " + apiIdentfier.getApiName() + "-" +
+	                	log.info("Updating swagger 1.2 docs resource for : " + apiIdentfier.getApiName() + "-" +
 	        					apiIdentfier.getVersion() + "-" + apiIdentfier.getProviderName());
                 	
 						updateSwagger12ResourcesUsingSwagger11Doc(apiIdentfier, registry);

@@ -47,7 +47,7 @@ public final class Constants {
 	public static final String API_DOC_12_PARAMETERS = "parameters";
 	public static final String API_DOC_12_NICKNAME = "nickname";
 	//this resource contains all the resources. This is introduced to swagger 1.2 location to hold 
-	//all the resource during the migration of 1.6. AM 1.6 does not have resources seperated by name
+	//all the resource during the migration of 1.6. AM 1.6 does not have resources separated by name
 	//so all resources are in one doc
 	public static final String API_DOC_12_ALL_RESOURCES_DOC = "resources";
 	
