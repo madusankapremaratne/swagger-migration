@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.apimgt.migration.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -233,7 +231,7 @@ public class ResourceUtil {
 				if(existingParams.isEmpty()) {
 					JSONParser parser = new JSONParser();
 					if(path.contains("{")) {
-						List<String> urlParams = ResourceUtil.getURLTempateParams(path);
+						List<String> urlParams = ResourceUtil.getURLTemplateParams(path);
 						for(String p: urlParams){
 							try {
 								JSONObject paramObj = (JSONObject) parser.parse(Constants.DEFAULT_PARAM_FOR_URL_TEMPLATE);
@@ -485,7 +483,7 @@ public class ResourceUtil {
 	 * @param url
 	 * @return
 	 */
-	public static List<String> getURLTempateParams(String url) {
+	public static List<String> getURLTemplateParams(String url) {
 		boolean endVal = false;
 
 		List<String> params = new ArrayList<String>();

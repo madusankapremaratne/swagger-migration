@@ -51,7 +51,7 @@ public class DocFileMigration {
     private static final Log log = LogFactory.getLog(DocFileMigration.class);
 
     public void migrate() throws UserStoreException {
-        log.info("*** In migrate() of DocFileMigration ***");
+        log.info("In migrate() of DocFileMigration");
 
         TenantManager tenantManager = ServiceHolder.getRealmService().getTenantManager();
         Tenant[] tenantsArray = tenantManager.getAllTenants();
@@ -64,7 +64,7 @@ public class DocFileMigration {
         allTenantsArray[allTenantsArray.length - 1] = superTenant;
 
         for (Tenant tenant : allTenantsArray) {
-            log.info("*** Document file migration for tenant " + tenant.getDomain() + "[" + tenant.getId() + "]" + " ***");
+            log.info("Document file migration for tenant " + tenant.getDomain() + "[" + tenant.getId() + "]");
             try {
                 //Start a new tenant flow
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().startTenantFlow();
