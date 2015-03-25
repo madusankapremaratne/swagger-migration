@@ -18,7 +18,6 @@
 package org.wso2.carbon.apimgt.migration;
 
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,7 +32,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.doc.model.Operation;
 import org.wso2.carbon.apimgt.api.doc.model.Parameter;
@@ -117,29 +115,29 @@ public class SwaggerResMigration {
 	                    ServiceHolder.getRealmService().getTenantUserRealm(tenant.getId()).getAuthorizationManager().authorizeRole(APIConstants.ANONYMOUS_ROLE,
 	                                                                                                                               "_system/governance" + newContentPath,
 	                                                                                                                               ActionConstants.GET);
-                    
-                  
-                   
-                    	//add swagger 1.2 resources    
+
+
+
+                    	//add swagger 1.2 resources
 	                    log.info("Creating swagger 1.2 docs resources for : " + apiIdentfier.getApiName() + "-" +
-	        					apiIdentfier.getVersion() + "-" + apiIdentfier.getProviderName());                	
-	                
-						createSwagger12Resources(artifact, registry, api, tenant);					
-	                	
-	                	//merge swagger 1.1 content with 1.2 resources   
+	        					apiIdentfier.getVersion() + "-" + apiIdentfier.getProviderName());
+
+						createSwagger12Resources(artifact, registry, api, tenant);
+
+	                	//merge swagger 1.1 content with 1.2 resources
 	                	log.info("Updating swagger 1.2 docs resource for : " + apiIdentfier.getApiName() + "-" +
 	        					apiIdentfier.getVersion() + "-" + apiIdentfier.getProviderName());
-                	
+
 						updateSwagger12ResourcesUsingSwagger11Doc(apiIdentfier, registry);
-						
+
 					} catch (RegistryException e) {
 						log.error("RegistryException while migrating api in " + tenant.getDomain() , e);
 					} catch (APIManagementException e) {
-						log.error("APIManagementException while migrating api in " + tenant.getDomain() , e);						
+						log.error("APIManagementException while migrating api in " + tenant.getDomain() , e);
 					} catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
-                }  
+                }
             } catch (RegistryException e) {
             	log.error("RegistryException while getting artifacts for  " + tenant.getDomain() , e);
 			} catch (Exception e) {
@@ -179,63 +177,58 @@ public class SwaggerResMigration {
         }
         return api;
     }
- 
-    
+
+
     /**
      * Update the swagger 1.2 resources using swagger 1.1 doc
-     * @param apiIdentfier
+     * @param adiIdentifier
      * @param registry
      * @throws APIManagementException
      * @throws RegistryException
      */
-	private static void updateSwagger12ResourcesUsingSwagger11Doc(APIIdentifier apiIdentfier, Registry registry)
+	private static void updateSwagger12ResourcesUsingSwagger11Doc(APIIdentifier adiIdentifier, Registry registry)
 			throws APIManagementException, RegistryException {
 
 		String apiDef11Path =
-				APIUtil.getAPIDefinitionFilePath(apiIdentfier.getApiName(),
-				                                 apiIdentfier.getVersion(),
-				                                 apiIdentfier.getProviderName());
+				APIUtil.getAPIDefinitionFilePath(adiIdentifier.getApiName(),
+                        adiIdentifier.getVersion(),
+                        adiIdentifier.getProviderName());
 		Resource apiDef11 = registry.get(apiDef11Path);
 
 		String apiDef11Json = new String((byte[]) apiDef11.getContent());
 
 		String swagger12location =
-				ResourceUtil.getSwagger12ResourceLocation(apiIdentfier.getApiName(),
-				                                          apiIdentfier.getVersion(),
-				                                          apiIdentfier.getProviderName());
+				ResourceUtil.getSwagger12ResourceLocation(adiIdentifier.getApiName(),
+				                                          adiIdentifier.getVersion(),
+				                                          adiIdentifier.getProviderName());
 		Resource swagger12Res = registry.get(swagger12location);
 		String[] resourcePaths = (String[]) swagger12Res.getContent();
 
 		try {
-			
+
 			ResourceUtil.updateAPISwaggerDocs(apiDef11Json, resourcePaths, registry);
 		} catch (ParseException e) {
 			throw new APIManagementException("Unable to parse registry resource", e);
 		}
-		
+
 	}
-    
-    
+
+
     /**
      * save create resource at the given location and set permission
-     * @param re
+     * @param registry
      * @param content
      * @param resourcePath
      * @param api
-     * @throws UserStoreException 
-     * @throws RegistryException
-     * @throws APIManagementException
-     * @throws SQLException
+     * @throws UserStoreException
      */
-    private static void createResource(Registry re, String content, String resourcePath, API api, Tenant tenant) throws UserStoreException{
-    	
-    	    	
+    private static void createResource(Registry registry, String content, String resourcePath, API api, Tenant tenant) throws UserStoreException{
     	try {
-            Resource docContent = re.newResource();
+            Resource docContent = registry.newResource();
             docContent.setContent(content);
             docContent.setMediaType("text/plain");
-            re.put(resourcePath, docContent);
-            
+            registry.put(resourcePath, docContent);
+
             String visibleRolesList = api.getVisibleRoles();
             String[] visibleRoles = new String[0];
             if (visibleRolesList != null) {
@@ -248,18 +241,16 @@ public class SwaggerResMigration {
             String msg = "Failed to add the API Definition content of : "
                          + APIConstants.API_DEFINITION_DOC_NAME + " of API :" + api.getId().getApiName();
             log.error(msg);
-        } 
+        }
     }
-     
+
     /**
-     * create swagger 1.2 resources 
+     * create swagger 1.2 resources
      * @param artifact
      * @param registry
      * @param api
      * @throws APIManagementException
-     * @throws RegistryException
-     * @throws SQLException
-     * @throws UserStoreException 
+     * @throws UserStoreException
      */
 	public static void createSwagger12Resources(GovernanceArtifact artifact, Registry registry,
 			API api, Tenant tenant) throws UserStoreException, APIManagementException  {
@@ -272,9 +263,9 @@ public class SwaggerResMigration {
 		String apiJsonTemplate = "{\n    \"apiVersion\": \"\",\n    \"swaggerVersion\": \"1.2\",\n    \"apis\": [],\n    \"info\": {\n        \"title\": \"\",\n        \"description\": \"\",\n        \"termsOfServiceUrl\": \"\",\n        \"contact\": \"\",\n        \"license\": \"\",\n        \"licenseUrl\": \"\"\n    },\n    \"authorizations\": {\n        \"oauth2\": {\n            \"type\": \"oauth2\",\n            \"scopes\": []\n        }\n    }\n}";
 
 		// for each resource
-		// String apiResourceJsontemplate =
+		// String apiResourceTemplate =
 		// "{\n    \"apiVersion\": \"\",\n    \"swaggerVersion\": \"1.2\",\n    \"resourcePath\":\"\",\n    \"apis\": [],\n    \"info\": {\n        \"title\": \"\",\n        \"description\": \"\",\n        \"termsOfServiceUrl\": \"\",\n        \"contact\": \"\",\n        \"license\": \"\",\n        \"licenseUrl\": \"\"\n    },\n    \"authorizations\": {\n        \"oauth2\": {\n            \"type\": \"oauth2\",\n            \"scopes\": []\n        }\n    }\n}";
-		String apiResourceJsontemplate = "{\n    \"apiVersion\": \"\",\n    \"swaggerVersion\": \"1.2\",\n    \"resourcePath\":\"\",\n    \"apis\": [] \n}";
+		String apiResourceJsonTemplate = "{\n    \"apiVersion\": \"\",\n    \"swaggerVersion\": \"1.2\",\n    \"resourcePath\":\"\",\n    \"apis\": [] \n}";
 
         //Auth Types
         HashMap<String,String> auth_types = new HashMap<String, String>();
@@ -282,38 +273,38 @@ public class SwaggerResMigration {
         auth_types.put("Application_User","Application User");
         auth_types.put("Application","Application");
         auth_types.put("Any","Application & Application User");
-		
+
 		//List<String> uriTemplateNames = new ArrayList<String>();
-		
+
 		//new
 		List<String> uriTemplatePathNames = new ArrayList<String>();
-		
+
 		Map<String, JSONObject> resourceNameJSONs = new HashMap<String, JSONObject>();
-		
+
 
 		// resousepath-operations list
 		Map<String, List<JSONObject>> resourcePathOperations = new HashMap<String, List<JSONObject>>();
-		
+
 		Map<String, String> resourceNamePathNameMap = new HashMap<String, String>();
 		JSONObject mainAPIJson = null;
 		try {
 
 			String apiVersion = artifact
 					.getAttribute(APIConstants.API_OVERVIEW_VERSION);
-			
+
 
 			int i = 0;
 
 			Set<URITemplate> uriTemplates = api.getUriTemplates();
 			Map<String, List<String>> resourceNamepaths = new HashMap<String, List<String>>();
 			Map<String, List<JSONObject>> resourcePathJSONs = new HashMap<String, List<JSONObject>>();
-			
+
 			for (URITemplate template : uriTemplates) {
 	    		List<Operation> ops;
 	    		List<Parameter> parameters = null;
-	    		
+
 	    		String path = template.getUriTemplate();
-	    		
+
 	    		if (path != null && (path.equals("/*") || (path.equals("/")))) {
 	        		path = "/*";
 	        	}
@@ -322,12 +313,12 @@ public class SwaggerResMigration {
 	    		String resourceName = "/default";
 	    		if(resourceNameEndIndex != -1) {
 	    			resourceName = path.substring(1, resourceNameEndIndex);
-	    		}  
-	    		
+	    		}
+
 	    		if(!resourceName.startsWith("/")) {
 	    			resourceName = "/" + resourceName;
 	    		}
-	    		
+
 	    		if(resourceNamepaths.get(resourceName) != null) {
 	    			resourcePaths = resourceNamepaths.get(resourceName);
 	    			if (!resourcePaths.contains(path)) {
@@ -337,64 +328,64 @@ public class SwaggerResMigration {
 	    			String[] httpVerbs = template.getMethodsAsString().split(" ");
 	    			String[] authtypes = template.getAuthTypeAsString().split(" ");
 	    			String[] tries = template.getThrottlingTiersAsString().split(" ");
-	    			
+
 	    			for(int j = 0; j < httpVerbs.length ; j ++) {
 	    				final JSONObject operationJson = (JSONObject) parser.parse(operationJsonTemplate);
 		    			operationJson.put("method", httpVerbs[j]);
 		    			operationJson.put("auth_type", auth_types.get(authtypes[j]));
 		    			operationJson.put("throttling_tier", tries[j]);
-		    			
+
 		    			if(resourcePathJSONs.get(path) != null) {
 		    				resourcePathJSONs.get(path).add(operationJson);
-		    				
+
 		    			} else {
 		    				resourcePathJSONs.put(path, new ArrayList<JSONObject>() {{
 		    					add(operationJson);
-		    				}});    				
+		    				}});
 		    			}
-	    			}  			
-	    			resourceNamepaths.put(resourceName, resourcePaths);    			
+	    			}
+	    			resourceNamepaths.put(resourceName, resourcePaths);
 	    		} else {
-	    			JSONObject resourcePathJson = (JSONObject) parser.parse(apiResourceJsontemplate);
-	    			
+	    			JSONObject resourcePathJson = (JSONObject) parser.parse(apiResourceJsonTemplate);
+
 //	    			resourcePathJson.put("apiVersion", version);
 //	    			resourcePathJson.put("resourcePath", resourceName);
 //	    			resourceNameJSONs.put(resourceName, resourcePathJson);
-	    			
+
 	    			resourcePaths = new ArrayList<String>();
 	    			resourcePaths.add(path);
-	    
+
 	    			//verbs comes as a [POST, GET] type of a string
 	    			String[] httpVerbs = template.getMethodsAsString().split(" ");
 	    			String[] authtypes = template.getAuthTypeAsString().split(" ");
 	    			String[] tries = template.getThrottlingTiersAsString().split(" ");
-	    			
+
 	    			for(int j = 0; j < httpVerbs.length ; j ++) {
 	    				final JSONObject operationJson = (JSONObject) parser.parse(operationJsonTemplate);
 		    			operationJson.put("method", httpVerbs[j]);
 		    			operationJson.put("auth_type", auth_types.get(authtypes[j]));
 		    			operationJson.put("throttling_tier", tries[j]);
-		    			
+
 		    			if(resourcePathJSONs.get(path) != null) {
 		    				resourcePathJSONs.get(path).add(operationJson);
-		    				
+
 		    			} else {
 		    				resourcePathJSONs.put(path, new ArrayList<JSONObject>() {{
 		    					add(operationJson);
-		    				}});    				
+		    				}});
 		    			}
-	    			}  			
-	    					
+	    			}
+
 	    			resourceNamepaths.put(resourceName, resourcePaths);
 	    		}
 	    	}
-			
-		
-			
+
+
+
 			// store api object(which contains operations objects) against the resource path
 			Map<String, JSONObject> pathNameApi = new HashMap<String, JSONObject>();
-			
-			//list to store the api array objects 
+
+			//list to store the api array objects
 			List<JSONObject> apiArray = new ArrayList<JSONObject>();
 
 			for (Entry<String, List<JSONObject>> entry : resourcePathJSONs
@@ -414,11 +405,11 @@ public class SwaggerResMigration {
 				}
 
 				pathNameApi.put(resourcePath, pathJson);
-				
+
 				apiArray.add(pathJson);
 			}
 
-		
+
 
 			/**
 			 * create only one resource doc for all the resources. name it as 'resources'
@@ -427,9 +418,9 @@ public class SwaggerResMigration {
 			APIIdentifier apiIdentfier = api.getId();
 			String apiDefinitionFilePath = APIUtil.getSwagger12DefinitionFilePath(apiIdentfier.getApiName(),
 														apiIdentfier.getVersion(),apiIdentfier.getProviderName());
-			
+
 			String resourceName = Constants.API_DOC_12_ALL_RESOURCES_DOC;
-			JSONObject resourcesObj = (JSONObject) parser.parse(apiResourceJsontemplate);
+			JSONObject resourcesObj = (JSONObject) parser.parse(apiResourceJsonTemplate);
 			resourcesObj.put("apiVersion", apiVersion);
 			resourcesObj.put("resourcePath", "/" + resourceName);
 			JSONArray apis = (JSONArray) resourcesObj.get("apis");
@@ -440,21 +431,19 @@ public class SwaggerResMigration {
 			String registryRes = apiDefinitionFilePath
 					+ RegistryConstants.PATH_SEPARATOR + resourceName;
 			createResource(registry, resourcesObj.toJSONString(), registryRes, api,tenant);
-			
+
 			// create api-doc file in the 1.2 resource location
-			
+
 			mainAPIJson = (JSONObject) parser.parse(apiJsonTemplate);
 			mainAPIJson.put("apiVersion", apiVersion);
 			((JSONObject)mainAPIJson.get("info")).put("description", "Available resources");
 			((JSONObject)mainAPIJson.get("info")).put("title", artifact.getAttribute(APIConstants.API_OVERVIEW_NAME));
-			
+
 			JSONArray apis1 = (JSONArray) mainAPIJson.get("apis");
 			JSONObject pathjob = new JSONObject();
 			pathjob.put("path", "/" + resourceName);
 			pathjob.put("description", "All resources for the api");
 			apis1.add(pathjob);
-			
-			
 			createResource(registry, mainAPIJson.toJSONString(),
 					apiDefinitionFilePath
 							+ APIConstants.API_DOC_1_2_RESOURCE_NAME, api, tenant);
@@ -466,8 +455,5 @@ public class SwaggerResMigration {
 			throw new APIManagementException(
 					"Error while generating swagger 1.2 resource for api ", e);
 		}
-
-	}	
-	
-	
+	}
 }
