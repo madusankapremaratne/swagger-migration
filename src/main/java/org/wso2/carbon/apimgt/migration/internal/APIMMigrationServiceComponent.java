@@ -61,7 +61,7 @@ public class APIMMigrationServiceComponent {
         try {
             APIMgtDBUtil.initialize();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while initializing DB Util " + e.getMessage());
         }
         String migrateVersion = System.getProperty("migrate");
         log.info("Migrate version => " + migrateVersion);
@@ -71,9 +71,11 @@ public class APIMMigrationServiceComponent {
             DocFileMigration docMigration = new DocFileMigration();
             try {
                 swaggerMigration.migrate();
+                log.debug("Swagger migration successfully completed");
                 docMigration.migrate();
+                log.debug("Document file migration successfully completed");
             } catch (UserStoreException e) {
-                e.printStackTrace();
+                log.error("User store exception occurred while migrating " + e.getMessage());
             }
         } else if (migrateVersion != null && migrateVersion.equalsIgnoreCase(Constants.VERSION_1_7)) {
             log.info("Migrating API-M 1.7 Swagger resources to API-M 1.8");
@@ -81,12 +83,12 @@ public class APIMMigrationServiceComponent {
             try {
                 Swagger18Migration swagger18Migration = new Swagger18Migration();
                 swagger18Migration.migrate();
+                log.debug("Swagger migration successfully completed");
             } catch (UserStoreException e) {
-                e.printStackTrace();
+                log.error("User store exception occurred while migrating " + e.getMessage());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("Interrupted exception occurred while migrating " + e.getMessage());
             }
-
 
         } else if (migrateVersion != null && migrateVersion.equalsIgnoreCase(Constants.VERSION_1_8)) {
             log.info("Migrating API-M 1.8 Swagger resources to API-M 1.9");
@@ -94,10 +96,11 @@ public class APIMMigrationServiceComponent {
             try {
                 Swagger19Migration swagger19Migration = new Swagger19Migration();
                 swagger19Migration.migrate();
+                log.debug("Swagger migration successfully completed");
             } catch (UserStoreException e) {
-                e.printStackTrace();
+                log.error("User store exception occurred while migrating " + e.getMessage());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("Inttionerrupted excep occurred while migrating " + e.getMessage());
             }
         }
         log.info("API-M migration bundle activated successfully");
@@ -172,10 +175,20 @@ public class APIMMigrationServiceComponent {
         ServiceHolder.setTenantRegLoader(null);
     }
 
+    /**
+     * Method to set API Manager configuration
+     *
+     * @param apimconfig api manager configuration
+     */
     protected void setApiManagerConfig(APIManagerConfigurationService apimconfig) {
         log.info("Setting api-manager configuration");
     }
 
+    /**
+     * Method to unset API manager configuration
+     *
+     * @param apimconfig api manager configuration
+     */
     protected void unsetApiManagerConfig(APIManagerConfigurationService apimconfig) {
         log.info("Un-setting api-manager configuration");
     }
