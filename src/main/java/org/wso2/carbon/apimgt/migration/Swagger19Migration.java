@@ -109,12 +109,10 @@ public class Swagger19Migration {
                         //API api = APIUtil.getAPI(artifact);
                         APIIdentifier adiIdentifier = api.getId();
 
-
                         String swagger12location = ResourceUtil.getSwagger12ResourceLocation(
                                 adiIdentifier.getApiName(),
                                 adiIdentifier.getVersion(),
                                 adiIdentifier.getProviderName());
-
 
                         if (!registry.resourceExists(swagger12location)) {
                             log.error("Swagger Resource migration has not happen yet for " +
@@ -127,7 +125,6 @@ public class Swagger19Migration {
                                     adiIdentifier.getVersion() + "-" + adiIdentifier.getProviderName());
                             //get swagger v2 doc
                             String swagger2doc = getSwagger2docUsingSwagger12RegistryResources(registry, swagger12location);
-
 
                             //create location in registry and add this
                             String swagger2location = ResourceUtil.getSwagger2ResourceLocation(
@@ -150,10 +147,7 @@ public class Swagger19Migration {
                                     ActionConstants.GET);
                             log.info("Created swagger v2.0 resource for : " + adiIdentifier.getApiName() + "-" +
                                     adiIdentifier.getVersion() + "-" + adiIdentifier.getProviderName());
-
                         }
-
-
                     } catch (APIManagementException e) {
                         log.error("APIManagementException while migrating api in " + tenant.getDomain(), e);
                     } catch (RegistryException e) {
@@ -201,7 +195,6 @@ public class Swagger19Migration {
             }
             api.setUriTemplates(uriTemplates);
 
-
         } catch (GovernanceException e) {
             String msg = "Failed to get API from artifact ";
             throw new APIManagementException(msg, e);
@@ -229,9 +222,9 @@ public class Swagger19Migration {
         Resource swaggerRes = registry.get(swagger12location + APIConstants.API_DOC_1_2_RESOURCE_NAME);
         JSONObject swagger12doc = (JSONObject) parser.parse(new String((byte[]) swaggerRes.getContent()));
 
-        Map<String, JSONArray> apiDefsPaths = new HashMap<String, JSONArray>();
-
+        Map<String, JSONArray> apiDefPaths = new HashMap<String, JSONArray>();
         Resource swagger12Res = registry.get(swagger12location);
+
         //get all the resources inside the 1.2 resource location
         String[] apiDefinitions = (String[]) swagger12Res.getContent();
 
@@ -245,24 +238,21 @@ public class Swagger19Migration {
             }
 
             Resource resource = registry.get(apiDefinition);
-            JSONObject apidef =
+            JSONObject apiDef =
                     (JSONObject) parser.parse(new String((byte[]) resource.getContent()));
-            //get the basepath. this is same for all api definitions.
-            swagger12BasePath = (String) apidef.get("basePath");
-            JSONArray apis = (JSONArray) apidef.get("apis");
-            for (int j = 0; j < apis.size(); j++) {
-                JSONObject api = (JSONObject) apis.get(j);
+            //get the base path. this is same for all api definitions.
+            swagger12BasePath = (String) apiDef.get("basePath");
+            JSONArray apiArray = (JSONArray) apiDef.get("apis");
+            for (int j = 0; j < apiArray.size(); j++) {
+                JSONObject api = (JSONObject) apiArray.get(j);
                 String path = (String) api.get("path");
                 JSONArray operations = (JSONArray) api.get("operations");
-                //set the operations object inside each api definitions resource and set it
-                //in a map againts its resource path
-                apiDefsPaths.put(path, operations);
+                //set the operations object inside each api definitions resource and set it in a map against its resource path
+                apiDefPaths.put(path, operations);
             }
-
         }
 
-
-        JSONObject swagger2Doc = generateSwagger2Document(swagger12doc, apiDefsPaths, swagger12BasePath);
+        JSONObject swagger2Doc = generateSwagger2Document(swagger12doc, apiDefPaths, swagger12BasePath);
 
         return swagger2Doc.toJSONString();
     }
@@ -272,14 +262,14 @@ public class Swagger19Migration {
      * Generate Swagger v2.0 document using Swagger v1.2 resources
      *
      * @param swagger12doc Old Swagger Document
-     * @param apiDefsPaths Paths in API definition
+     * @param apiDefPaths Paths in API definition
      * @param swagger12BasePath Location of swagger v1.2 document
      * @return Swagger v2.0 document as a JSON object
      * @throws ParseException
      * @throws MalformedURLException
      */
     private static JSONObject generateSwagger2Document(JSONObject swagger12doc,
-                                                       Map<String, JSONArray> apiDefsPaths, String swagger12BasePath) throws ParseException, MalformedURLException {
+                                                       Map<String, JSONArray> apiDefPaths, String swagger12BasePath) throws ParseException, MalformedURLException {
         //create swagger 2.0 doc
         JSONObject swagger20doc = new JSONObject();
 
@@ -292,7 +282,7 @@ public class Swagger19Migration {
         swagger20doc.put("info", info);
 
         //set the paths object
-        JSONObject pathObj = generatePathsObj(apiDefsPaths);
+        JSONObject pathObj = generatePathsObj(apiDefPaths);
         swagger20doc.put("paths", pathObj);
 
         URL url = new URL(swagger12BasePath);
@@ -323,7 +313,6 @@ public class Swagger19Migration {
     private static JSONObject generateSecurityDefinitionsObject(JSONObject swagger12doc) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject securityDefinitionObject = new JSONObject();
-        //String securitySchemeObjectInfo = "{\"type\" : \"\", \"description\" : \"\", \"name\" : \"\", \"in\" : \"\", \"flow\" : \"\", \"authorizationUrl\" : \"\", \"tokenUrl\" : \"\", \"scopes\" : \"\"}";
         JSONObject securitySchemeObject = (JSONObject) parser.parse(Constants.DEFAULT_SECURITY_SCHEME);
 
         JSONObject authorizations = (JSONObject) swagger12doc.get("authorizations");
@@ -351,8 +340,6 @@ public class Swagger19Migration {
 
         JSONObject infoObj = (JSONObject) swagger12doc.get("info");
         JSONParser parser = new JSONParser();
-        //String swagger2Info = "{\"title\" : \"\", \"version\" : \"\"}";
-
         JSONObject swagger2InfoObj = (JSONObject) parser.parse(Constants.DEFAULT_INFO);
 
         //set the required parameters first
@@ -412,17 +399,14 @@ public class Swagger19Migration {
         for (Map.Entry<String, JSONArray> entry : apiDefinitionPaths.entrySet()) {
             String key = entry.getKey();
             JSONArray operations = entry.getValue();
-            //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#path-item-object
             JSONObject pathItemObj = new JSONObject();
-
             for (Object operation : operations) {
                 JSONObject operationObject = (JSONObject) operation;
                 String method = (String) operationObject.get("method");
-                JSONArray swagger2ParamObjs = (JSONArray) operationObject.get("parameters");
+                JSONArray swagger2ParamObjects = (JSONArray) operationObject.get("parameters");
                 JSONObject swagger2OperationsObj = new JSONObject();
                 JSONArray newParameters = new JSONArray();
-
-                for (Object swagger2ParamObj : swagger2ParamObjs) {
+                for (Object swagger2ParamObj : swagger2ParamObjects) {
                     JSONObject oldParam = (JSONObject) swagger2ParamObj;
                     JSONObject paramObj = new JSONObject();
                     paramObj.put("name", oldParam.get("name"));
@@ -433,19 +417,13 @@ public class Swagger19Migration {
                     } else {
                         paramObj.put("description", "");
                     }
-
-                    //TODO fill it if necessary, ex type, items etc
-                    //TODO if 'in' is body then schema is differ
                     newParameters.add(paramObj);
-
                 }
 
-                //generate the Operation object
-                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#operationObject
+                //generate the Operation object (https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#operationObject)
                 swagger2OperationsObj.put("operationId", operationObject.get("nickname"));
                 //setting operation level params
                 swagger2OperationsObj.put("parameters", newParameters);
-
                 if (operationObject.containsKey("notes")) {
                     swagger2OperationsObj.put("description", operationObject.get("notes"));
                 }
@@ -454,8 +432,7 @@ public class Swagger19Migration {
                 }
 
 
-                //set pathItem object for the resource
-                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathItemObject
+                //set pathItem object for the resource(https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathItemObject)
                 pathItemObj.put(method.toLowerCase(), swagger2OperationsObj);
                 //TODO Check this param. A list of parameters that are applicable for all the operations described under this path. These parameters can be overridden at the operation level
                 pathItemObj.put("parameters", new JSONArray());
