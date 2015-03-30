@@ -1,19 +1,19 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  * 
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied. See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
  */
 
 package org.wso2.carbon.apimgt.migration;
@@ -60,8 +60,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class responsible to migrate swagger v1.2 documents to swagger v2.0 document and set it to a
- * new swagger v2.0 location.  Swagger v2.0 doc is generated according to the <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">Swagger 2 Specification</a>
+ * Class responsible to migrate swagger v1.2 documents to swagger v2.0 document and set it to a new swagger v2.0 location.
+ * Swagger v2.0 doc is generated according to the <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">Swagger 2 Specification</a>
  */
 public class Swagger19Migration {
     private static final Log log = LogFactory.getLog(Swagger19Migration.class);
@@ -78,6 +78,7 @@ public class Swagger19Migration {
 
         TenantManager tenantManager = ServiceHolder.getRealmService().getTenantManager();
         Tenant[] tenantsArray = tenantManager.getAllTenants();
+        log.debug("Tenant array loaded successfully");
 
         // Add  super tenant to the tenant array
         Tenant[] allTenantsArray = Arrays.copyOf(tenantsArray, tenantsArray.length + 1);
@@ -85,6 +86,7 @@ public class Swagger19Migration {
         superTenant.setId(MultitenantConstants.SUPER_TENANT_ID);
         superTenant.setDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
         allTenantsArray[allTenantsArray.length - 1] = superTenant;
+        log.debug("Super tenant added to the tenant array");
 
         for (Tenant tenant : allTenantsArray) {
             log.info("Swagger migration for tenant " + tenant.getDomain() + "[" + tenant.getId() + "]" + " ");
@@ -166,6 +168,7 @@ public class Swagger19Migration {
                 PrivilegedCarbonContext.endTenantFlow();
             }
         }
+        log.debug("Migration done for all the tenants");
 
     }
 
@@ -179,6 +182,7 @@ public class Swagger19Migration {
             String apiVersion = artifact.getAttribute(APIConstants.API_OVERVIEW_VERSION);
             APIIdentifier apiId = new APIIdentifier(providerName, apiName, apiVersion);
             api = new API(apiId);
+            log.debug("API read from registry successfully");
 
             api.setUrl(artifact.getAttribute(APIConstants.API_OVERVIEW_ENDPOINT_URL));
             api.setSandboxUrl(artifact.getAttribute(APIConstants.API_OVERVIEW_SANDBOX_URL));
@@ -194,10 +198,11 @@ public class Swagger19Migration {
                 uriTemplate.setResourceSandboxURI(api.getSandboxUrl());
             }
             api.setUriTemplates(uriTemplates);
+            log.debug("API updated with other attributes");
 
         } catch (GovernanceException e) {
-            String msg = "Failed to get API from artifact ";
-            throw new APIManagementException(msg, e);
+            String errorMsg = "Failed to get API from artifact. ";
+            throw new APIManagementException(errorMsg, e);
         }
         return api;
     }
@@ -251,9 +256,7 @@ public class Swagger19Migration {
                 apiDefPaths.put(path, operations);
             }
         }
-
         JSONObject swagger2Doc = generateSwagger2Document(swagger12doc, apiDefPaths, swagger12BasePath);
-
         return swagger2Doc.toJSONString();
     }
 
@@ -437,25 +440,25 @@ public class Swagger19Migration {
                 //TODO Check this param. A list of parameters that are applicable for all the operations described under this path. These parameters can be overridden at the operation level
                 pathItemObj.put("parameters", new JSONArray());
 
-                //set the responseMessages. this is a required field. Set a default value if empty
-                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#responsesObject
-                JSONObject responses = null;
+                //set the responseObject (https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#responsesObject)
+                JSONObject responseObject = null;
                 if (operationObject.containsKey("responseMessages")) {
-                    responses = new JSONObject();
+                    responseObject = new JSONObject();
                     JSONArray responseMessages = (JSONArray) operationObject.get("responseMessages");
                     for (Object responseMessage : responseMessages) {
                         JSONObject errorObj = (JSONObject) responseMessage;
-                        responses.put(errorObj.get("code"), errorObj.get("message"));
+                        responseObject.put(errorObj.get("code"), errorObj.get("message"));
                     }
                 }
-                if (responses == null) {
-                    //set a default response message
-                    responses = (JSONObject) jsonParser.parse(Constants.DEFAULT_RESPONSE);
+                if (responseObject == null) {
+                    //set a default response message since this is required field
+                    responseObject = (JSONObject) jsonParser.parse(Constants.DEFAULT_RESPONSE);
                 }
                 //pathItemObj.put("responses", responses);
-                swagger2OperationsObj.put("responses", responses);
+                swagger2OperationsObj.put("responses", responseObject);
 
-                //TODO :  where to put the throttling_tier, auth_type, scope
+                /*
+                //TODO :  where to put the throttling_tier, auth_type
                 //inside the operation object in 1.2 api def
                 String scope = null;
                 if (operationObject.containsKey("scope")) {
@@ -470,6 +473,7 @@ public class Swagger19Migration {
                 JSONArray swagger2securityObj = new JSONArray();
                 //pathItemObj.put("security", new JSONArray());
                 //----------------------------------------------------------------
+                */
             }
             pathsObj.put(key, pathItemObj);
         }
