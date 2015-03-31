@@ -456,24 +456,6 @@ public class Swagger19Migration {
                 }
                 //pathItemObj.put("responses", responses);
                 swagger2OperationsObj.put("responses", responseObject);
-
-                /*
-                //TODO :  where to put the throttling_tier, auth_type
-                //inside the operation object in 1.2 api def
-                String scope = null;
-                if (operationObject.containsKey("scope")) {
-                    scope = (String) operationObject.get("scope");
-                }
-                String throttlingTier = (String) operationObject.get("throttling_tier");
-                String authType = (String) operationObject.get("auth_type");
-
-                //set the security object. These above mention params might be a part of the
-                //security object??
-                //https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#securityRequirementObject
-                JSONArray swagger2securityObj = new JSONArray();
-                //pathItemObj.put("security", new JSONArray());
-                //----------------------------------------------------------------
-                */
             }
             pathsObj.put(key, pathItemObj);
         }
