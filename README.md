@@ -1,4 +1,4 @@
-WSO2 API Migration Tool - Migrate APIManager 1.8.0 to 1.9.0
+WSO2 API Migration Tool - Migrate APIManager 1.8.0 to 1.9.0. <br />
 This bundle is used to migrate swagger documents from swagger version 1.2 to 2.0
 
 Follow the steps below.
