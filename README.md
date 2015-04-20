@@ -1,10 +1,10 @@
-WSO2 API Migration Tool - Migrate APIManager 1.8.0 to 1.9.0. <br />
+WSO2 API Migration Tool - Migrate APIManager 1.8.0 to 1.9.0.
 This bundle is used to migrate swagger documents from swagger version 1.2 to 2.0
 
 Follow the steps below.
- Copy the bundle to AM 1.8.0 <APIM_HOME>/repository/components/dropins
- Start the server with -Dmigrate=1.8 to migrate swagger resources
- This operation will transfer swagger resources from v1.2 to v2.0
+- Copy the bundle to AM 1.8.0 <APIM_HOME>/repository/components/dropins
+- Start the server with -Dmigrate=1.8 to migrate swagger resources
+- This operation will transfer swagger resources from v1.2 to v2.0
 
 Notes
 - The mysql.sql in the migrate directories should be run against the API_M database.
