@@ -48,6 +48,7 @@ import org.wso2.carbon.user.core.service.RealmService;
  * @scr.reference name="apim.configuration" interface="org.wso2.carbon.apimgt.impl.APIManagerConfigurationService" cardinality="1..1"
  * policy="dynamic" bind="setApiManagerConfig" unbind="unsetApiManagerConfig"
  */
+@SuppressWarnings("unused")
 public class APIMMigrationServiceComponent {
 
     private static final Log log = LogFactory.getLog(APIMMigrationServiceComponent.class);
@@ -66,24 +67,30 @@ public class APIMMigrationServiceComponent {
         String migrateVersion = System.getProperty("migrate");
         log.info("Migrate version => " + migrateVersion);
         if (migrateVersion != null && migrateVersion.equalsIgnoreCase(Constants.VERSION_1_6)) {
-            log.info("Migrating API-M 1.6 swagger and documentation resources to API-M 1.7");
+            log.info("Migrating APIM 1.6 swagger and documentation resources to APIM 1.7");
             SwaggerResMigration swaggerMigration = new SwaggerResMigration();
             DocFileMigration docMigration = new DocFileMigration();
             try {
                 swaggerMigration.migrate();
-                log.debug("Swagger migration successfully completed");
+                if(log.isDebugEnabled()) {
+                    log.debug("Swagger migration successfully completed");
+                }
                 docMigration.migrate();
-                log.debug("Document file migration successfully completed");
+                if(log.isDebugEnabled()) {
+                    log.debug("Document file migration successfully completed");
+                }
             } catch (UserStoreException e) {
                 log.error("User store exception occurred while migrating " + e.getMessage());
             }
         } else if (migrateVersion != null && migrateVersion.equalsIgnoreCase(Constants.VERSION_1_7)) {
-            log.info("Migrating API-M 1.7 Swagger resources to API-M 1.8");
-            // Create a thread and wait till the API-M DBUtils is initialized
+            log.info("Migrating APIM 1.7 Swagger resources to APIM 1.8");
+            // Create a thread and wait till the APIM DBUtils is initialized
             try {
                 Swagger18Migration swagger18Migration = new Swagger18Migration();
                 swagger18Migration.migrate();
-                log.debug("Swagger migration successfully completed");
+                if(log.isDebugEnabled()) {
+                    log.debug("Swagger migration successfully completed");
+                }
             } catch (UserStoreException e) {
                 log.error("User store exception occurred while migrating " + e.getMessage());
             } catch (InterruptedException e) {
@@ -91,19 +98,21 @@ public class APIMMigrationServiceComponent {
             }
 
         } else if (migrateVersion != null && migrateVersion.equalsIgnoreCase(Constants.VERSION_1_8)) {
-            log.info("Migrating API-M 1.8 Swagger resources to API-M 1.9");
-            // Create a thread and wait till the API-M DBUtils is initialized
+            log.info("Migrating APIM 1.8 Swagger resources to APIM 1.9");
+            // Create a thread and wait till the APIM DBUtils is initialized
             try {
                 Swagger19Migration swagger19Migration = new Swagger19Migration();
                 swagger19Migration.migrate();
-                log.debug("Swagger migration successfully completed");
+                if(log.isDebugEnabled()) {
+                    log.debug("Swagger migration successfully completed");
+                }
             } catch (UserStoreException e) {
                 log.error("User store exception occurred while migrating " + e.getMessage());
             } catch (InterruptedException e) {
                 log.error("Inttionerrupted excep occurred while migrating " + e.getMessage());
             }
         }
-        log.info("API-M migration bundle activated successfully");
+        log.info("APIM migration bundle activated successfully");
     }
 
     /**
@@ -112,7 +121,7 @@ public class APIMMigrationServiceComponent {
      * @param context OSGi component context.
      */
     protected void deactivate(ComponentContext context) {
-        log.debug("API-M migration bundle is deactivated");
+        log.info("APIM migration bundle is deactivated");
     }
 
     /**
@@ -121,7 +130,9 @@ public class APIMMigrationServiceComponent {
      * @param registryService service to get tenant data.
      */
     protected void setRegistryService(RegistryService registryService) {
-        log.debug("Setting RegistryService for API-M migration");
+        if(log.isDebugEnabled()) {
+            log.debug("Setting RegistryService for APIM migration");
+        }
         ServiceHolder.setRegistryService(registryService);
     }
 
@@ -131,7 +142,9 @@ public class APIMMigrationServiceComponent {
      * @param registryService service to get registry data.
      */
     protected void unsetRegistryService(RegistryService registryService) {
-        log.debug("Unset Registry service");
+        if(log.isDebugEnabled()) {
+            log.debug("Unset Registry service");
+        }
         ServiceHolder.setRegistryService(null);
     }
 
@@ -141,7 +154,7 @@ public class APIMMigrationServiceComponent {
      * @param realmService service to get tenant data.
      */
     protected void setRealmService(RealmService realmService) {
-        log.debug("Setting RealmService for API-M migration");
+        log.debug("Setting RealmService for APIM migration");
         ServiceHolder.setRealmService(realmService);
     }
 
@@ -151,7 +164,9 @@ public class APIMMigrationServiceComponent {
      * @param realmService service to get tenant data.
      */
     protected void unsetRealmService(RealmService realmService) {
-        log.debug("Unset Realm service");
+        if(log.isDebugEnabled()) {
+            log.debug("Unset Realm service");
+        }
         ServiceHolder.setRealmService(null);
     }
 
@@ -161,7 +176,7 @@ public class APIMMigrationServiceComponent {
      * @param tenantRegLoader tenant registry loader
      */
     protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegLoader) {
-        log.debug("Setting TenantRegistryLoader for API-M migration");
+        log.debug("Setting TenantRegistryLoader for APIM migration");
         ServiceHolder.setTenantRegLoader(tenantRegLoader);
     }
 
@@ -178,19 +193,19 @@ public class APIMMigrationServiceComponent {
     /**
      * Method to set API Manager configuration
      *
-     * @param apimconfig api manager configuration
+     * @param apiManagerConfig api manager configuration
      */
-    protected void setApiManagerConfig(APIManagerConfigurationService apimconfig) {
-        log.info("Setting api-manager configuration");
+    protected void setApiManagerConfig(APIManagerConfigurationService apiManagerConfig) {
+        log.info("Setting APIManager configuration");
     }
 
     /**
      * Method to unset API manager configuration
      *
-     * @param apimconfig api manager configuration
+     * @param apiManagerConfig api manager configuration
      */
-    protected void unsetApiManagerConfig(APIManagerConfigurationService apimconfig) {
-        log.info("Un-setting api-manager configuration");
+    protected void unsetApiManagerConfig(APIManagerConfigurationService apiManagerConfig) {
+        log.info("Un-setting APIManager configuration");
     }
 
 }

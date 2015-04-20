@@ -97,149 +97,151 @@ public class DocFileMigration {
                                     //We need to remove the /t/tenanatdoman/registry/resource/_system/governance section to set permissions.
                                     int startIndex = docFilePath.indexOf("governance") + "governance".length();
                                     String filePath = docFilePath.substring(startIndex, docFilePath.length());
-                                    if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".") == -1) {
+                                    if (!filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".")) {
                                         Resource resource = registry.get(filePath);
                                         resource.setMediaType("text/plain");
                                         registry.put(filePath, resource);
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".wsdl") > -1) {
+                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".wsdl")) {
                                         String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
                                         if (registry.resourceExists(resourcePath)) {
                                             Resource resource = registry.get(filePath);
                                             resource.setMediaType("application/api-wsdl");
                                             registry.put(filePath, resource);
                                         }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".pdf") > -1) {
+                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".pdf")) {
                                         String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
                                         if (registry.resourceExists(resourcePath)) {
                                             Resource resource = registry.get(filePath);
                                             resource.setMediaType("application/pdf");
                                             registry.put(filePath, resource);
                                         }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".xl") > -1) {
+                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".xl")) {
                                         String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
                                         if (registry.resourceExists(resourcePath)) {
                                             Resource resource = registry.get(filePath);
                                             resource.setMediaType("application/vnd.ms-excel");
                                             registry.put(filePath, resource);
                                         }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".ppt") > -1) {
+                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".ppt")) {
                                         String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
                                         if (registry.resourceExists(resourcePath)) {
                                             Resource resource = registry.get(filePath);
                                             resource.setMediaType("application/vnd.ms-powerpoint");
                                             registry.put(filePath, resource);
                                         }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".xml") > -1) {
+                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".xml")) {
                                         String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
                                         if (registry.resourceExists(resourcePath)) {
                                             Resource resource = registry.get(filePath);
                                             resource.setMediaType("application/xml");
                                             registry.put(filePath, resource);
                                         }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".js") > -1) {
+                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".js")) {
                                         String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
                                         if (registry.resourceExists(resourcePath)) {
                                             Resource resource = registry.get(filePath);
                                             resource.setMediaType("application/javascript");
                                             registry.put(filePath, resource);
                                         }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".css") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("text/css");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".csv") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("text/csv");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".html") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("text/html");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".json") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("application/json");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".png") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("image/png");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".ttf") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("application/x-font-ttf");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".eot") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("application/vnd.ms-fontobject");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".woff") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("application/font-woff");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".otf") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("application/x-font-otf");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".zip") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("application/zip");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".xhtml") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("application/xhtml+xml");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".txt") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("text/plain");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".png") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("image/png");
-                                            registry.put(filePath, resource);
-                                        }
-                                    } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].indexOf(".jpeg") > -1) {
-                                        String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
-                                        if (registry.resourceExists(resourcePath)) {
-                                            Resource resource = registry.get(filePath);
-                                            resource.setMediaType("image/jpeg");
-                                            registry.put(filePath, resource);
+                                    } else {
+                                        if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".css")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("text/css");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".csv")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("text/csv");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".html")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("text/html");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".json")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("application/json");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".png")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("image/png");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".ttf")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("application/x-font-ttf");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".eot")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("application/vnd.ms-fontobject");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".woff")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("application/font-woff");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".otf")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("application/x-font-otf");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".zip")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("application/zip");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".xhtml")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("application/xhtml+xml");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".txt")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("text/plain");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".png")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("image/png");
+                                                registry.put(filePath, resource);
+                                            }
+                                        } else if (filePath.split(RegistryConstants.PATH_SEPARATOR + "files" + RegistryConstants.PATH_SEPARATOR)[1].contains(".jpeg")) {
+                                            String resourcePath = "_system" + RegistryConstants.PATH_SEPARATOR + "governance" + filePath;
+                                            if (registry.resourceExists(resourcePath)) {
+                                                Resource resource = registry.get(filePath);
+                                                resource.setMediaType("image/jpeg");
+                                                registry.put(filePath, resource);
+                                            }
                                         }
                                     }
                                     registry.copy(filePath, filePath);

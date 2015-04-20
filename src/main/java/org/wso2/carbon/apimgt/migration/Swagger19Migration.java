@@ -51,7 +51,6 @@ import org.wso2.carbon.user.core.tenant.TenantManager;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -86,7 +85,9 @@ public class Swagger19Migration {
         superTenant.setId(MultitenantConstants.SUPER_TENANT_ID);
         superTenant.setDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
         allTenantsArray[allTenantsArray.length - 1] = superTenant;
-        log.debug("Super tenant added to the tenant array");
+        if(log.isDebugEnabled()) {
+            log.debug("Super tenant added to the tenant array");
+        }
 
         for (Tenant tenant : allTenantsArray) {
             log.info("Swagger migration for tenant " + tenant.getDomain() + "[" + tenant.getId() + "]" + " ");
@@ -182,7 +183,9 @@ public class Swagger19Migration {
             String apiVersion = artifact.getAttribute(APIConstants.API_OVERVIEW_VERSION);
             APIIdentifier apiId = new APIIdentifier(providerName, apiName, apiVersion);
             api = new API(apiId);
-            log.debug("API read from registry successfully");
+            if(log.isDebugEnabled()) {
+                log.debug("API read from registry successfully");
+            }
 
             api.setUrl(artifact.getAttribute(APIConstants.API_OVERVIEW_ENDPOINT_URL));
             api.setSandboxUrl(artifact.getAttribute(APIConstants.API_OVERVIEW_SANDBOX_URL));
@@ -198,7 +201,9 @@ public class Swagger19Migration {
                 uriTemplate.setResourceSandboxURI(api.getSandboxUrl());
             }
             api.setUriTemplates(uriTemplates);
-            log.debug("API updated with other attributes");
+            if(log.isDebugEnabled()) {
+                log.debug("API updated with other attributes");
+            }
 
         } catch (GovernanceException e) {
             String errorMsg = "Failed to get API from artifact. ";
