@@ -442,8 +442,6 @@ public class Swagger19Migration {
 
                 //set pathItem object for the resource(https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#pathItemObject)
                 pathItemObj.put(method.toLowerCase(), swagger2OperationsObj);
-                //TODO Check this param. A list of parameters that are applicable for all the operations described under this path. These parameters can be overridden at the operation level
-                pathItemObj.put("parameters", new JSONArray());
 
                 //set the responseObject (https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#responsesObject)
                 JSONObject responseObject = null;
