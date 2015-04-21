@@ -43,11 +43,9 @@ public class ResourceUtil {
 	 * Get all the parameters related to each resource. The parameter array is
 	 * an array which is part of the operations object inside each resource.
 	 * 
-	 * @param resource
-	 *            api-doc which contains swagger 1.1 info
-	 * @return map of parameter array related to all the http methods for each
-	 *         resource. the key for
-	 *         the map is resourcepath_httpmethod
+	 * @param resource api-doc which contains swagger 1.1 info
+	 * @return map of parameter array related to all the http methods for each resource.
+     *      the key for the map is resourcepath_httpmethod
 	 */
 	public static Map<String, JSONArray> getAllParametersForResources(JSONObject resource) {
 		Map<String, JSONArray> parameters = new HashMap<String, JSONArray>();
@@ -512,18 +510,18 @@ public class ResourceUtil {
 	/**
 	 * location for the swagger v2.0 resources
 	 * TODO check the correct swagger 2 location and the resource name. Currently it is /2.0/swagger.json
-	 * @param apiName
-	 * @param apiVersion
-	 * @param apiProvider
-	 * @return
+	 * @param apiName name of the API
+	 * @param apiVersion version of the API
+	 * @param apiProvider provider name of the API
+	 * @return swagger v2.0 resource location as a string
 	 */
-	public static String getSwagger2ResourceLocation(String apiName, String apiVersion,
-	                                                  String apiProvider) {
+    public static String getSwagger2ResourceLocation(String apiName, String apiVersion,
+                                                     String apiProvider) {
         return
                 APIConstants.API_DOC_LOCATION + RegistryConstants.PATH_SEPARATOR +
                         apiName + "-" + apiVersion + "-" + apiProvider +
                         RegistryConstants.PATH_SEPARATOR +
                         "2.0" + RegistryConstants.PATH_SEPARATOR + "swagger.json";
     }
-	
+
 }
