@@ -62,6 +62,7 @@ import java.util.Set;
  * Class responsible to migrate swagger v1.2 documents to swagger v2.0 document and set it to a new swagger v2.0 location.
  * Swagger v2.0 doc is generated according to the <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md">Swagger 2 Specification</a>
  */
+@SuppressWarnings("unchecked")
 public class Swagger19Migration {
     private static final Log log = LogFactory.getLog(Swagger19Migration.class);
 
@@ -251,8 +252,8 @@ public class Swagger19Migration {
             //get the base path. this is same for all api definitions.
             swagger12BasePath = (String) apiDef.get("basePath");
             JSONArray apiArray = (JSONArray) apiDef.get("apis");
-            for (int j = 0; j < apiArray.size(); j++) {
-                JSONObject api = (JSONObject) apiArray.get(j);
+            for (Object anApiArray : apiArray) {
+                JSONObject api = (JSONObject) anApiArray;
                 String path = (String) api.get("path");
                 JSONArray operations = (JSONArray) api.get("operations");
                 //set the operations object inside each api definitions resource and set it in a map against its resource path
@@ -274,6 +275,7 @@ public class Swagger19Migration {
      * @throws ParseException
      * @throws MalformedURLException
      */
+
     private static JSONObject generateSwagger2Document(JSONObject swagger12doc,
                                                        Map<String, JSONArray> apiDefPaths, String swagger12BasePath) throws ParseException, MalformedURLException {
         //create swagger 2.0 doc
