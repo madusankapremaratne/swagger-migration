@@ -93,6 +93,7 @@ public final class Constants {
 			+ "}";
 
     public static final String DEFAULT_SECURITY_SCHEME = "{" +
+            "\"x-wso2-scopes\" : \"\", " +
             "\"type\" : \"\", " +
             "\"description\" : \"\", " +
             "\"name\" : \"\"," +

@@ -132,9 +132,8 @@ public class Swagger19Migration {
                             Resource docContent = registry.newResource();
                             docContent.setContent(swagger2doc);
                             docContent.setMediaType("application/json");
-                            if (!registry.resourceExists(swagger2location)) {
-                                registry.put(swagger2location, docContent);
-                            }
+                            registry.put(swagger2location, docContent);
+
 
                             //Find the visible roles of to set to the resource
                             String visibleRolesList = api.getVisibleRoles();
@@ -328,7 +327,8 @@ public class Swagger19Migration {
         for (Object obj : authTypes) {
             JSONObject authObj = (JSONObject) authorizations.get(obj.toString());
             if (authObj.containsKey("scopes")) {
-                securitySchemeObject.put("scopes", authObj.get("scopes"));
+                //Put it to custom WSO2 scopes
+                securitySchemeObject.put("x-wso2-scopes", authObj.get("scopes"));
             }
             securityDefinitionObject.put(obj.toString(), securitySchemeObject);
         }
