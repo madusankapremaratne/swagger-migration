@@ -65,7 +65,6 @@ import java.util.Set;
 public class Swagger19Migration {
     private static final Log log = LogFactory.getLog(Swagger19Migration.class);
 
-
     /**
      * Migrates the APIs to new version
      *
@@ -85,7 +84,7 @@ public class Swagger19Migration {
         superTenant.setId(MultitenantConstants.SUPER_TENANT_ID);
         superTenant.setDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
         allTenantsArray[allTenantsArray.length - 1] = superTenant;
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Super tenant added to the tenant array");
         }
 
@@ -109,47 +108,47 @@ public class Swagger19Migration {
                     try {
                         api = getAPI(artifact, registry);
 
-                        //API api = APIUtil.getAPI(artifact);
-                        APIIdentifier adiIdentifier = api.getId();
+                        APIIdentifier apiIdentifier = api.getId();
+                        String apiName = apiIdentifier.getApiName();
+                        String apiVersion = apiIdentifier.getVersion();
+                        String apiProviderName = apiIdentifier.getProviderName();
 
-                        String swagger12location = ResourceUtil.getSwagger12ResourceLocation(
-                                adiIdentifier.getApiName(),
-                                adiIdentifier.getVersion(),
-                                adiIdentifier.getProviderName());
+                        String swagger12location = ResourceUtil.getSwagger12ResourceLocation(apiName, apiVersion, apiProviderName);
 
                         if (!registry.resourceExists(swagger12location)) {
                             log.error("Swagger Resource migration has not happen yet for " +
-                                    adiIdentifier.getApiName() + "-" + adiIdentifier.getVersion() + "-"
-                                    + adiIdentifier.getProviderName() +
+                                    apiName + "-" + apiVersion + "-"
+                                    + apiProviderName +
                                     ". Please run -D" + Constants.VERSION_1_6 + " first");
 
                         } else {
-                            log.info("Creating swagger v2.0 resource for : " + adiIdentifier.getApiName() + "-" +
-                                    adiIdentifier.getVersion() + "-" + adiIdentifier.getProviderName());
+                            log.info("Creating swagger v2.0 resource for : " + apiName + "-" + apiVersion + "-" + apiProviderName);
                             //get swagger v2 doc
                             String swagger2doc = getSwagger2docUsingSwagger12RegistryResources(registry, swagger12location);
 
                             //create location in registry and add this
-                            String swagger2location = ResourceUtil.getSwagger2ResourceLocation(
-                                    adiIdentifier.getApiName(),
-                                    adiIdentifier.getVersion(),
-                                    adiIdentifier.getProviderName());
+                            String swagger2location = ResourceUtil.getSwagger2ResourceLocation(apiName, apiVersion, apiProviderName);
 
                             Resource docContent = registry.newResource();
                             docContent.setContent(swagger2doc);
                             docContent.setMediaType("application/json");
-                            registry.put(swagger2location, docContent);
+                            if (!registry.resourceExists(swagger2location)) {
+                                registry.put(swagger2location, docContent);
+                            }
+
+                            //Find the visible roles of to set to the resource
                             String visibleRolesList = api.getVisibleRoles();
                             String[] visibleRoles = new String[0];
                             if (visibleRolesList != null) {
                                 visibleRoles = visibleRolesList.split(",");
                             }
-                            ServiceHolder.getRealmService().getTenantUserRealm(
-                                    tenant.getId()).getAuthorizationManager().authorizeRole(APIConstants.ANONYMOUS_ROLE,
-                                    "_system/governance" + swagger2location,
-                                    ActionConstants.GET);
-                            log.info("Created swagger v2.0 resource for : " + adiIdentifier.getApiName() + "-" +
-                                    adiIdentifier.getVersion() + "-" + adiIdentifier.getProviderName());
+
+
+                            //Currently set to ANONYMOUS_ROLE, need to set to visible roles
+                            ServiceHolder.getRealmService().getTenantUserRealm(tenant.getId()).getAuthorizationManager().authorizeRole(APIConstants.ANONYMOUS_ROLE,
+                                    "_system/governance" + swagger2location, ActionConstants.GET);
+
+                            log.info("Created swagger v2.0 resource for : " + apiName + "-" + apiVersion + "-" + apiProviderName);
                         }
                     } catch (APIManagementException e) {
                         log.error("APIManagementException while migrating api in " + tenant.getDomain(), e);
@@ -183,7 +182,7 @@ public class Swagger19Migration {
             String apiVersion = artifact.getAttribute(APIConstants.API_OVERVIEW_VERSION);
             APIIdentifier apiId = new APIIdentifier(providerName, apiName, apiVersion);
             api = new API(apiId);
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("API read from registry successfully");
             }
 
@@ -201,7 +200,7 @@ public class Swagger19Migration {
                 uriTemplate.setResourceSandboxURI(api.getSandboxUrl());
             }
             api.setUriTemplates(uriTemplates);
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("API updated with other attributes");
             }
 
@@ -269,8 +268,8 @@ public class Swagger19Migration {
     /**
      * Generate Swagger v2.0 document using Swagger v1.2 resources
      *
-     * @param swagger12doc Old Swagger Document
-     * @param apiDefPaths Paths in API definition
+     * @param swagger12doc      Old Swagger Document
+     * @param apiDefPaths       Paths in API definition
      * @param swagger12BasePath Location of swagger v1.2 document
      * @return Swagger v2.0 document as a JSON object
      * @throws ParseException
@@ -457,7 +456,6 @@ public class Swagger19Migration {
                     //set a default response message since this is required field
                     responseObject = (JSONObject) jsonParser.parse(Constants.DEFAULT_RESPONSE);
                 }
-                //pathItemObj.put("responses", responses);
                 swagger2OperationsObj.put("responses", responseObject);
             }
             pathsObj.put(key, pathItemObj);

@@ -72,11 +72,11 @@ public class APIMMigrationServiceComponent {
             DocFileMigration docMigration = new DocFileMigration();
             try {
                 swaggerMigration.migrate();
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Swagger migration successfully completed");
                 }
                 docMigration.migrate();
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Document file migration successfully completed");
                 }
             } catch (UserStoreException e) {
@@ -88,7 +88,7 @@ public class APIMMigrationServiceComponent {
             try {
                 Swagger18Migration swagger18Migration = new Swagger18Migration();
                 swagger18Migration.migrate();
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Swagger migration successfully completed");
                 }
             } catch (UserStoreException e) {
@@ -103,7 +103,7 @@ public class APIMMigrationServiceComponent {
             try {
                 Swagger19Migration swagger19Migration = new Swagger19Migration();
                 swagger19Migration.migrate();
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Swagger migration successfully completed");
                 }
             } catch (UserStoreException e) {
@@ -130,7 +130,7 @@ public class APIMMigrationServiceComponent {
      * @param registryService service to get tenant data.
      */
     protected void setRegistryService(RegistryService registryService) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Setting RegistryService for APIM migration");
         }
         ServiceHolder.setRegistryService(registryService);
@@ -142,7 +142,7 @@ public class APIMMigrationServiceComponent {
      * @param registryService service to get registry data.
      */
     protected void unsetRegistryService(RegistryService registryService) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Unset Registry service");
         }
         ServiceHolder.setRegistryService(null);
@@ -164,7 +164,7 @@ public class APIMMigrationServiceComponent {
      * @param realmService service to get tenant data.
      */
     protected void unsetRealmService(RealmService realmService) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Unset Realm service");
         }
         ServiceHolder.setRealmService(null);
